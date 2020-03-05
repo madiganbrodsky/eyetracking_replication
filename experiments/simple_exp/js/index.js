@@ -28,43 +28,31 @@ function make_slides(f) {
       var instruction = stim.instruction3;
       $(".instruction").html(instruction);
     
-      var loc1_img = '<img src="images/'+stim.location1+'.png" style="height:80px" class="center">';
+      var loc1_img = '<img src="images/'+stim.location1+'.png"style="height:100px" class="left">';
       $(".loc1").html(loc1_img);
 
-      var loc2_img = '<img src="images/'+stim.location2+'.png" style="height:80px" class="center">';
+      var loc2_img = '<img src="images/'+stim.location2+'.png" style="height:100px" class="center">';
       $(".loc2").html(loc2_img);
 
-      var loc3_img = '<img src="images/'+stim.location3+'.png" style="height:80px" class="center">';
+      var loc3_img = '<img src="images/'+stim.location3+'.png" style="height:100px" class="center">';
       $(".loc3").html(loc3_img);
 
-      var loc4_img = '<img src="images/'+stim.location4+'.png" style="height:80px" class="center">';
+      var loc4_img = '<img src="images/'+stim.location4+'.png" style="height:100px" class="center">';
       $(".loc4").html(loc4_img);
 
-      var loc5_img = '<img src="images/'+stim.location5+'.png" style="height:80px" class="center">';
+      var loc5_img = '<img src="images/'+stim.location5+'.png" style="height:90px" class="right">';
       $(".loc5").html(loc5_img);
 
-      var loc6_img = '<img src="images/'+stim.location6+'.png" style="height:80px" class="center">';
+      var loc6_img = '<img src="images/'+stim.location6+'.png" style="height:90px" class="left">';
       $(".loc6").html(loc6_img);
       
       
-      var boy = '<img src="images/boy.png" style="height:200px" class="center">';
-      var girl = '<img src="images/girl.png" style="height:200px" class="center">';
+      var boy = '<img src="images/boy.png" style="height:200px" align="buttom">';
+      var girl = '<img src="images/girl.png" style="height:200px" align="buttom">';
       $(".loc7").html(boy);
       $(".loc8").html(boy);
       $(".loc9").html(girl);
       $(".loc10").html(girl);
-
-      // location1: "2_pears",
-      // location2: "3_bananas",
-      // location3: "2_apples",
-      // location4: "3_oranges",
-      // location5: "1_apple",
-      // location6: "1_pear",
-      // location7: "boy",
-      // location8: "boy",
-      // location9: "girl",
-      // location10: "girl",
-
     },
 
     button : function() {
@@ -76,7 +64,7 @@ function make_slides(f) {
     },
     log_responses : function() {
     exp.data_trials.push({
-        "stim" : this.stim.displayID,
+        "displayID" : this.stim.displayID,
         "response" : exp.sliderPost
     });
 

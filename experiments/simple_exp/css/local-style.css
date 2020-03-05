@@ -11,6 +11,8 @@
 	grid-gap: 0px;
 	background-color: #2196F3;
 	padding: 0px;
+	align-items: center;
+	justify-items: center;
 }
   
 .grid-container > div {
