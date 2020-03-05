@@ -23,49 +23,104 @@ function make_slides(f) {
       $(".err").hide();
     
       this.stim = stim; // store this information in the slide so you can record it later
-      // $(".prompt").html(stim.sentence);
 
       var instruction = stim.instruction3;
       $(".instruction").html(instruction);
     
       var loc1_img = '<img src="images/'+stim.location1+'.png"style="height:100px" class="left">';
       $(".loc1").html(loc1_img);
-
       var loc2_img = '<img src="images/'+stim.location2+'.png" style="height:100px" class="center">';
       $(".loc2").html(loc2_img);
-
       var loc3_img = '<img src="images/'+stim.location3+'.png" style="height:100px" class="center">';
       $(".loc3").html(loc3_img);
-
       var loc4_img = '<img src="images/'+stim.location4+'.png" style="height:100px" class="center">';
       $(".loc4").html(loc4_img);
-
       var loc5_img = '<img src="images/'+stim.location5+'.png" style="height:90px" class="right">';
       $(".loc5").html(loc5_img);
-
       var loc6_img = '<img src="images/'+stim.location6+'.png" style="height:90px" class="left">';
       $(".loc6").html(loc6_img);
-      
-      
+
+      //make the boys and girls clickable too
       var boy = '<img src="images/boy.png" style="height:200px" align="buttom">';
       var girl = '<img src="images/girl.png" style="height:200px" align="buttom">';
       $(".loc7").html(boy);
       $(".loc8").html(boy);
       $(".loc9").html(girl);
       $(".loc10").html(girl);
+
+      $(".loc1").click(function(event){
+        exp.click = "AOI1";
+        $(".loc1").off('click');
+        _s.button();
+       });
+
+      $(".loc2").click(function(){
+        exp.click = "AOI2";
+        $(".loc2").off('click');
+        _s.button();
+       });
+
+      $(".loc3").click(function(){
+        exp.click = "AOI3";
+        $(".loc3").off('click');
+        _s.button();
+       });
+
+      $(".loc4").click(function(){
+        exp.click = "AOI4";
+        $(".loc4").off('click');
+        _s.button();
+       });
+
+      $(".loc5").click(function(){
+        exp.click = "AOI5";
+        $(".loc5").off('click');
+        _s.button();
+       });
+
+      $(".loc6").click(function(){
+        exp.click = "AOI6";
+        $(".loc6").off('click');
+        _s.button();
+       });
+
+       $(".loc7").click(function(){
+        exp.click = "AOI7";
+        $(".loc7").off();
+        _s.button();
+       });
+
+       $(".loc8").click(function(){
+        exp.click = "AOI8";
+        $(".loc8").off('click');
+        _s.button();
+       });
+
+       $(".loc9").click(function(){
+        exp.click = "AOI9";
+        $(".loc9").off('click');
+        _s.button();
+       });
+
+       $(".loc10").click(function(){
+        exp.click = "AOI10";
+        $(".loc10").off('click');
+        _s.button();
+       });
+      
     },
 
     button : function() {
+      console.log(exp.click);
       this.log_responses();
-      /* use _stream.apply(this); if and only if there is
+      _stream.apply(this); /* use _stream.apply(this); if and only if there is
       "present" data. (and only *after* responses are logged) */
-      _stream.apply(this);
       
     },
     log_responses : function() {
     exp.data_trials.push({
         "displayID" : this.stim.displayID,
-        "response" : exp.sliderPost
+        "response" : exp.click
     });
 
     }
