@@ -26,6 +26,8 @@ function make_slides(f) {
 
       var instruction = stim.instruction3;
       $(".instruction").html(instruction);
+
+      //$(".instruction").html("Click on the ..."); // FOR INCREMENTAL DECISION TASK
     
       var loc1_img = '<img src="images/'+stim.location1+'.png"style="height:100px" class="left">';
       $(".loc1").html(loc1_img);
@@ -48,70 +50,24 @@ function make_slides(f) {
       $(".loc9").html(girl);
       $(".loc10").html(girl);
 
-      $(".loc1").click(function(event){
-        exp.click = "AOI1";
-        $(".loc1").off('click');
+      $(".loc").bind("click",function(e){
+        e.preventDefault();
+        console.log($(this).data().loc)
+        exp.click1 = $(this).data().loc;
+        $(".loc").unbind("click");
+        //$(".instruction").html(instruction); // FOR INCREMENTAL DECISION TASK
         _s.button();
        });
 
-      $(".loc2").click(function(){
-        exp.click = "AOI2";
-        $(".loc2").off('click');
-        _s.button();
-       });
+      // $(".loc3").click(function(){
+      //   exp.click = "AOI3";
+      //   $(".loc3").off('click');
+      //   _s.button();
+      //  });
 
-      $(".loc3").click(function(){
-        exp.click = "AOI3";
-        $(".loc3").off('click');
-        _s.button();
-       });
-
-      $(".loc4").click(function(){
-        exp.click = "AOI4";
-        $(".loc4").off('click');
-        _s.button();
-       });
-
-      $(".loc5").click(function(){
-        exp.click = "AOI5";
-        $(".loc5").off('click');
-        _s.button();
-       });
-
-      $(".loc6").click(function(){
-        exp.click = "AOI6";
-        $(".loc6").off('click');
-        _s.button();
-       });
-
-       $(".loc7").click(function(){
-        exp.click = "AOI7";
-        $(".loc7").off();
-        _s.button();
-       });
-
-       $(".loc8").click(function(){
-        exp.click = "AOI8";
-        $(".loc8").off('click');
-        _s.button();
-       });
-
-       $(".loc9").click(function(){
-        exp.click = "AOI9";
-        $(".loc9").off('click');
-        _s.button();
-       });
-
-       $(".loc10").click(function(){
-        exp.click = "AOI10";
-        $(".loc10").off('click');
-        _s.button();
-       });
-      
     },
 
     button : function() {
-      console.log(exp.click);
       this.log_responses();
       _stream.apply(this); /* use _stream.apply(this); if and only if there is
       "present" data. (and only *after* responses are logged) */
@@ -120,7 +76,8 @@ function make_slides(f) {
     log_responses : function() {
     exp.data_trials.push({
         "displayID" : this.stim.displayID,
-        "response" : exp.click
+        "location1" : this.stim.location1,
+        "response" : exp.click,
     });
 
     }
