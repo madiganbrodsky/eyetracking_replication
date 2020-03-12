@@ -3,6 +3,7 @@
 <<<<<<< HEAD
 	* fix formatting of the display (Leyla - Monday)
 	* images or locations should be clickable? (Madigan - Monday) (Leyla - Monday makes images clickable)
+		*Images or locations clickable - Madigan 3/12 
 	* fix log_responses to save the location and stimuli info
 * make it an incremental decision task (Tuesday 11.30)
 	* how much to reveal with every click?
@@ -23,6 +24,7 @@
 	* talk to Daisy about how it gets saved/with clicks or a sep file
 * add practice trials (x6)
 	* seperate display -double display-, audio 
+	* 
 * change instructions/legal info
 * clean stimuli list, replace space with underscore
 
