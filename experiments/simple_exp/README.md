@@ -1,16 +1,14 @@
-# Plan (updates March 10th)
+# Plan (updated on March 12)
 * make images clickable
-<<<<<<< HEAD
-	* fix formatting of the display (Leyla - Monday)
-	* images or locations should be clickable? (Madigan - Monday) (Leyla - Monday makes images clickable)
-		*Images or locations clickable - Madigan 3/12 
+* fix formatting of the display (Leyla - Monday)
+* images or locations should be clickable? (Madigan - Monday) (Leyla - Monday makes images clickable)
 	* fix log_responses to save the location and stimuli info - this exp. logs the stimuli from list #3 that they gave us - when we make the other two exps. we will have to change the last 3 stimuli responses that get logged bc they are titled based off of what list they come from. (MB 3/12)
-* make it an incremental decision task (Tuesday 11.30)
+* make it an incremental decision task (Leyla)
 	* how much to reveal with every click?
 	* how to slice the instruction
 	* save every click in same instance with diff variable
 * incorporating eyetracking stuff
-	* how did Sun and Brehnny look at eye tracking data 
+* how did Sun and Brehnny look at eye tracking data 
 =======
 	* fix formatting of the display **(Leyla)**
 	* images or locations should be clickable? **(Madigan)**	* fix log_responses to save the location and stimuli info **(Madigan)**
@@ -27,6 +25,11 @@
 	* 
 * change instructions/legal info
 * clean stimuli list, replace space with underscore
+
+click on the ...
+click on the 
+
+(Click on the/[gender] with/ [determiner] of [Name’s]/[object(s)]). 
 
 
 

@@ -18,17 +18,30 @@ function make_slides(f) {
   slides.trial = slide({
     name : "trial",
     present: exp.stims, //every element in exp.stims is passed to present_handle one by one as 'stim'
-    
+    start: function(){
+      exp.counter = 0;
+    },
     present_handle : function(stim) {
+      exp.selection_array=[];
       $(".err").hide();
     
       this.stim = stim; // store this information in the slide so you can record it later
 
       var instruction = stim.instruction3;
-      $(".instruction").html(instruction);
+  
+      // instruction3: "Click on the boy that has two of Susan's pears"
 
-      //$(".instruction").html("Click on the ..."); // FOR INCREMENTAL DECISION TASK
-    
+      words = instruction.split(" ")
+      init_instruction = words[0]+ " " + words[1] + " " + words[2]; // click on the
+      instruction1 = init_instruction + " " + words[3] + " " + words[4] + " " + words[5]; // click on the boy that has
+      instruction2 = instruction1 + " " + words[6] + " " + words[7] + " " + words[8] // click on the boy that has two of Susan's
+      instruction3 = instruction2 + " " + words[9]  // click on the boy that has two of Susan's pears
+
+      const instruction_array=[instruction1,instruction2,instruction3]
+
+      $(".instruction").html(init_instruction);
+  
+  
       var loc1_img = '<img src="images/'+stim.location1+'.png"style="height:100px" class="left">';
       $(".loc1").html(loc1_img);
       var loc2_img = '<img src="images/'+stim.location2+'.png" style="height:100px" class="center">';
@@ -50,24 +63,26 @@ function make_slides(f) {
       $(".loc9").html(girl);
       $(".loc10").html(girl);
 
+      
       $(".loc").bind("click",function(e){
         e.preventDefault();
-        console.log($(this).data().loc)
-        exp.click1 = $(this).data().loc;
-        $(".loc").unbind("click");
-        //$(".instruction").html(instruction); // FOR INCREMENTAL DECISION TASK
-        _s.button();
+        //console.log(exp.counter);
+        if (exp.counter>2){
+          exp.selection_array.push($(this).data().loc)
+          exp.counter = 0;
+          $(".loc").unbind('click')
+          _s.button();
+        } else {
+          exp.selection_array.push($(this).data().loc)
+          $(".instruction").html(instruction_array[exp.counter])
+          exp.counter++;
+        }
        });
-
-      // $(".loc3").click(function(){
-      //   exp.click = "AOI3";
-      //   $(".loc3").off('click');
-      //   _s.button();
-      //  });
 
     },
 
     button : function() {
+      console.log("Location array => ",exp.selection_array)
       this.log_responses();
       _stream.apply(this); /* use _stream.apply(this); if and only if there is
       "present" data. (and only *after* responses are logged) */
@@ -104,7 +119,7 @@ function make_slides(f) {
         "target_object3" :this.stim.target_object3, 
         "target_figure3" :this.stim.target_figure3, 
         "instruction3" : this.stim.instruction3,
-        "response" : exp.click, 
+        "response" : exp.selection_array, 
     });
 
     }
