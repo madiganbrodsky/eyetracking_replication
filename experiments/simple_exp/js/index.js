@@ -33,9 +33,8 @@ function make_slides(f) {
                         "plates, forks, spoons and knives.",
                         "scissors, pencils, erasers and rulers.",
                         "scissors, pencils, erasers and rulers."]
-      var images = [ 
 
-      ]
+
       if ((stim.displayID == 1)| (stim.displayID == 3)| (stim.displayID == 5)) {
         var init_sentence = "This is " + stim.figure + ". " + stim.pronoun + " gives out fruit to children every day."
         var init_image = '<img src="images/'+ stim.figure + '.png" style="height:300px" class="center">';
@@ -45,14 +44,17 @@ function make_slides(f) {
         setTimeout(function(){ 
           var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Monday. " + stim.pronoun + " has " +objects[stim.displayID]
           $(".sentence").html(second_sentence);
+          var second_image = '<img src="images/p.trial_'+ stim.displayID+ '.jpg" style="height:300px" class="center">';
+          $(".image").html(second_image);
           $(".grid_button").show();
         }, 3000);
       
       }
       else if ((stim.displayID == 2)| (stim.displayID == 4)| (stim.displayID == 6)) {
-        var init_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Tuesday. " + stim.pronoun + " has " +objects[stim.displayID]
-
+        var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Tuesday. " + stim.pronoun + " has " +objects[stim.displayID]
         $(".sentence").html(second_sentence);
+        var second_image = '<img src="images/p.trial_'+ stim.displayID+ '.jpg" style="height:300px" class="center">';
+        $(".image").html(second_image);
         $(".grid_button").show();
       }
 
@@ -96,7 +98,6 @@ function make_slides(f) {
 
       $(".loc").bind("click",function(e){
         e.preventDefault();
-        console.log(exp.counter);
         if (exp.counter>2){
           exp.selection_array.push($(this).data().loc)
           exp.counter = 0;
