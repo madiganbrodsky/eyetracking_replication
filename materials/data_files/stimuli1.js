@@ -1485,4 +1485,4 @@
 	target_figure3: "girl",
 	object3: "pencils",
 	instruction3: "Click on the girl that has four of Michael's pencils"
-},
+}
