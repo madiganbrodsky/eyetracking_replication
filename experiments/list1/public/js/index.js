@@ -25,11 +25,12 @@ function make_slides(f) {
       
       exp.selection_array=[];    
       this.stim = stim; 
+      $(".second_slide").hide();
       $(".grid_button").hide();
       $(".grid-container").hide();
       
 
-      var objects = ["","apples, pears, bananas and oranges.",
+      exp.objects =     ["","apples, pears, bananas and oranges.",
                         "apples, pears, bananas and oranges.",
                         "scissors, pencils, erasers and rulers.",
                         "scissors, pencils, erasers and rulers.",
@@ -42,24 +43,34 @@ function make_slides(f) {
         var init_image = '<img src="images/'+ stim.figure + '.png" style="height:300px" class="center">';
         $(".sentence").html(init_sentence);
         $(".image").html(init_image);
+        $(".second_slide").show();
 
-        setTimeout(function(){ 
-          var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Monday. " + stim.pronoun + " has " +objects[stim.displayID] + ". " + stim.pronoun + " always brings more than enough. The leftover " + stim.setting + " are put in the middle."
-          $(".sentence").html(second_sentence);
-          var second_image = '<img src="images/p.trial_'+ stim.displayID+ '.jpg" style="height:300px" class="center">';
-          $(".image").html(second_image);
-          $(".grid_button").show();
-        }, 1500);
+        // setTimeout(function(){ 
+        //   var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Monday. " + stim.pronoun + " has " +objects[stim.displayID] + ". " + stim.pronoun + " always brings more than enough. The leftover " + stim.setting + " are put in the middle."
+        //   $(".sentence").html(second_sentence);
+        //   var second_image = '<img src="images/p.trial_'+ stim.displayID+ '.jpg" style="height:300px" class="center">';
+        //   $(".image").html(second_image);
+        //   $(".grid_button").show();
+        // }, 1500);
       
       }
       else if ((stim.displayID == 2)| (stim.displayID == 4)| (stim.displayID == 6)) {
-        var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Tuesday. " + stim.pronoun + " has " +objects[stim.displayID]
+        var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Tuesday. " + stim.pronoun + " has " + exp.objects[stim.displayID]
         $(".sentence").html(second_sentence);
         var second_image = '<img src="images/p.trial_'+ stim.displayID+ '.jpg" style="height:300px" class="center">';
         $(".image").html(second_image);
         $(".grid_button").show();
       }
 
+    },
+
+    second_slide: function(){
+      $(".second_slide").hide();
+      var second_sentence = "Here is what " + this.stim.figure + " has on Monday. " + this.stim.pronoun + " has " + exp.objects[this.stim.displayID] + " " + this.stim.pronoun + " always brings more than enough. The leftover " + this.stim.setting + " are put in the middle."
+      $(".sentence").html(second_sentence);
+      var second_image = '<img src="images/p.trial_'+ this.stim.displayID+ '.jpg" style="height:300px" class="center">';
+      $(".image").html(second_image);
+      $(".grid_button").show();
     },
 
     grid: function(){
@@ -71,7 +82,7 @@ function make_slides(f) {
       init_instruction = words[0]+ " " + words[1] + " " + words[2] + " ..."; // click on the
       instruction1 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5] + " ..."; // click on the boy that has
       instruction2 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5]+ " " + words[6] + " " + words[7] + " " + words[8] + " ..."; // click on the boy that has two of Susan's
-      instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5]+ " " + words[6] + " " + words[7] + " " + words[8] + " " + words[9];  // click on the boy that has two of Susan's pears
+      instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5]+ " " + words[6] + " " + words[7] + " " + words[8] + " " + words[9] + ".";  // click on the boy that has two of Susan's pears
 
       const instruction_array=[instruction1,instruction2,instruction3]
 
@@ -124,8 +135,15 @@ function make_slides(f) {
     log_responses : function() {
       exp.data_trials.push({
           "displayID" : this.stim.displayID,
+          "ExpFiller" : this.stim.ExpFiller, 
           "setting" : this.stim.setting, 
           "figure" : this.stim.figure, 
+          "Intro_object" : this.stim.Intro_object,
+          "Res_object" : this.stim.Res_object,
+          "object1" : this.stim.object1,
+          "object2" :  this.stim.object2,
+          "object3" :  this.stim.object3,
+          "object4" : this.stim.object4,
           "display_type" : this.stim.display_type, 
           "location1" : this.stim.location1,
           "location2" : this.stim.location2,
@@ -137,21 +155,18 @@ function make_slides(f) {
           "location8" : this.stim.location8, 
           "location9" : this.stim.location9, 
           "location10" : this.stim.location10, 
-          "Prime" : this.stim.Prime, 
-          "target1" : this.stim.target1, 
-          "target2" : this.stim.target2, 
-          "competitor1" : this.stim.competitor1, 
-          "competitor2" : this.stim.competitor2, 
-          "condition" : this.stim.condition, 
-          "determiner" : this.stim.determiner, 
-          "size" : this.stim.size, 
-          "ExpFiller" : this.stim.ExpFiller, 
-          "correctAns1" : this.stim.correctAns1, 
-          "correctAns2" : this.stim.correctAns2, 
-          "list" : this.stim.list, 
-          "target_object3" :this.stim.target_object3, 
-          "target_figure3" :this.stim.target_figure3, 
-          "instruction3" : this.stim.instruction3,
+          "condition1" : this.stim.condition1,
+          "size1" : this.stim.size1,
+          "target1" : this.stim.target1,
+          "competitor1" : this.stim.competitor1,
+          "target_object1" : this.stim.target_object1,
+          "target_figure1" : this.stim.target_figure1,
+          "determiner1" : this.stim.determiner1,
+          "object1" : this.stim.object1,
+          "instruction1" : this.stim.instruction1,
+          "prime" : this.stim.prime,
+          "correctAns1"  : this.stim.correctAns1,
+          "correctAns2" : this.stim.correctAns2,
           "response" : exp.selection_array, 
         });
       }
@@ -183,7 +198,7 @@ function make_slides(f) {
       init_instruction = words[0]+ " " + words[1] + " " + words[2] + " ..."; // click on the
       instruction1 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5] + " ..."; // click on the boy that has
       instruction2 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5]+ " " + words[6] + " " + words[7] + " " + words[8] + " ..."; // click on the boy that has two of Susan's
-      instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5]+ " " + words[6] + " " + words[7] + " " + words[8] + " " + words[9];  // click on the boy that has two of Susan's pears
+      instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3] + " " + words[4] + " " + words[5]+ " " + words[6] + " " + words[7] + " " + words[8] + " " + words[9] + ".";  // click on the boy that has two of Susan's pears
       const instruction_array=[instruction1,instruction2,instruction3]
 
       $(".instruction").html(init_instruction);

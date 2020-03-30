@@ -1,3 +1,0 @@
-displayID,setting,figure,display type,location1,location2,location3,location4,lcoation5,location6,location7,location8,location9,location10,Prime,target1,target2,competitor1,competitor2,condition,determiner,size,ExpFiller,correctAns1,correctAns2,list,target object1,target figure1,object1,instruction1
-1,fruit,Susan's,33-33,2 pears,3 bananas,2 apples,3 oranges,1 apple,1 pear,boy,boy,girl,girl,BoySomeSusanPears,1,7,2,8,some,some,small,Exp,AOI1,AOI7,1,2 pears,boy,pears,Click on the boy that has some of Susan's pears
-2,fruit,Susan's,33-33,3 apples,2 oranges,2 bananas,3 pears,1 banana,1 orange,boy,boy,girl,girl,BoySomeSusanOranges,2,8,1,7,some,some,small,Exp,AOI2,AOI8,1,2 oranges,boy,oranges,Click on the boy that has some of Susan's oranges
