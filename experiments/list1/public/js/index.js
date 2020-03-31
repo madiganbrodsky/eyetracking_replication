@@ -39,23 +39,15 @@ function make_slides(f) {
 
 
       if ((stim.displayID == 1)| (stim.displayID == 3)| (stim.displayID == 5)) {
-        var init_sentence = "This is " + stim.figure + ". " + stim.pronoun + " gives out " + stim.setting + " to children every day."
+        var init_sentence = "This is " + stim.figure + ". " + stim.figure + " gives out " + stim.setting + " to children every day."
         var init_image = '<img src="images/'+ stim.figure + '.png" style="height:300px" class="center">';
         $(".sentence").html(init_sentence);
         $(".image").html(init_image);
         $(".second_slide").show();
-
-        // setTimeout(function(){ 
-        //   var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Monday. " + stim.pronoun + " has " +objects[stim.displayID] + ". " + stim.pronoun + " always brings more than enough. The leftover " + stim.setting + " are put in the middle."
-        //   $(".sentence").html(second_sentence);
-        //   var second_image = '<img src="images/p.trial_'+ stim.displayID+ '.jpg" style="height:300px" class="center">';
-        //   $(".image").html(second_image);
-        //   $(".grid_button").show();
-        // }, 1500);
       
       }
       else if ((stim.displayID == 2)| (stim.displayID == 4)| (stim.displayID == 6)) {
-        var second_sentence = "Here is what " + stim.pronoun.toLowerCase() + " has on Tuesday. " + stim.pronoun + " has " + exp.objects[stim.displayID]
+        var second_sentence = "Here is what " + stim.figure + " has on Tuesday. " + stim.figure + " has " + exp.objects[stim.displayID]
         $(".sentence").html(second_sentence);
         var second_image = '<img src="images/p.trial_'+ stim.displayID+ '.jpg" style="height:300px" class="center">';
         $(".image").html(second_image);
@@ -66,7 +58,7 @@ function make_slides(f) {
 
     second_slide: function(){
       $(".second_slide").hide();
-      var second_sentence = "Here is what " + this.stim.figure + " has on Monday. " + this.stim.pronoun + " has " + exp.objects[this.stim.displayID] + " " + this.stim.pronoun + " always brings more than enough. The leftover " + this.stim.setting + " are put in the middle."
+      var second_sentence = "Here is what " + this.stim.figure + " has on Monday. " + this.stim.figure + " has " + exp.objects[this.stim.displayID] + " " + this.stim.pronoun + " always brings more than enough. The leftover " + this.stim.setting + " are put in the middle."
       $(".sentence").html(second_sentence);
       var second_image = '<img src="images/p.trial_'+ this.stim.displayID+ '.jpg" style="height:300px" class="center">';
       $(".image").html(second_image);
@@ -182,7 +174,7 @@ function make_slides(f) {
 
   slides.trial = slide({
     name : "trial",
-    present: exp.stims, //every element in exp.stims is passed to present_handle one by one as 'stim'
+    present: exp.stims_shuffled, //every element in exp.stims is passed to present_handle one by one as 'stim'
     start: function(){
       exp.counter = 0;
     },
@@ -335,6 +327,8 @@ function init() {
       screenW: screen.width,
       screenUW: exp.width
     };
+
+  exp.stims_shuffled = _.shuffle(exp.stims);
 
   //blocks of the experiment:
   exp.structure=["i0", "instructions", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];

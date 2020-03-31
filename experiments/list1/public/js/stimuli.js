@@ -204,7 +204,7 @@ exp.practice = [
         target_figure1: "girl",
         determiner1: "some",
         object1: "knives",
-        instruction1: "Click on the boy that has some of Amy's knives",
+        instruction1: "Click on the girl that has some of Amy's knives",
         prime: "GirlSomeAmyknives",
         correctAns1: "AOI3",
         correctAns2: "AOI9"
