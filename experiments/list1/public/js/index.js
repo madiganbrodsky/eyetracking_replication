@@ -19,6 +19,7 @@ function make_slides(f) {
     name : "practice",
     start: function(){
       exp.counter = 0;
+      $(".err").hide();
     },
     present: exp.practice,
     present_handle : function(stim) {
@@ -66,6 +67,7 @@ function make_slides(f) {
     },
 
     grid: function(){
+      $(".err").hide();
       $(".image").html("  ");
       $(".grid_button").hide();
 
@@ -103,17 +105,24 @@ function make_slides(f) {
       $(".grid-container").show();
 
       $(".loc").bind("click",function(e){
+        $(".err").hide();
         e.preventDefault();
-        if (exp.counter>2){
-          exp.selection_array.push($(this).data().loc)
-          exp.counter = 0;
-          $(".loc").unbind('click')
-          _s.button();
-        } else {
-          exp.selection_array.push($(this).data().loc)
-          $(".sentence").html(instruction_array[exp.counter])
-          exp.counter++;
+        var loc = $(this).data().loc
+        if (["AOI5","AOI6"].includes(loc)) {
+          $(".err").show();
         }
+        else {
+          if (exp.counter>2){
+            exp.selection_array.push(loc)
+            exp.counter = 0;
+            $(".loc").unbind('click')
+            _s.button();
+          } else {
+            exp.selection_array.push(loc)
+            $(".sentence").html(instruction_array[exp.counter])
+            exp.counter++;
+          }
+        }  
        });
     },
 
@@ -177,9 +186,14 @@ function make_slides(f) {
     present: exp.stims_shuffled, //every element in exp.stims is passed to present_handle one by one as 'stim'
     start: function(){
       exp.counter = 0;
+
     },
     present_handle : function(stim) {
       exp.selection_array=[];
+      exp.time_array=[];
+      exp.trial_start = Date.now();
+      console.log("time:"+(Date.now()-exp.trial_start))
+
       $(".err").hide();
       $(".grid-container").show();
     
@@ -203,12 +217,12 @@ function make_slides(f) {
       $(".loc3").html(loc3_img);
       var loc4_img = '<img src="images/'+stim.location4+'.png" style="height:100px" class="center">';
       $(".loc4").html(loc4_img);
+      
       var loc5_img = '<img src="images/'+stim.location5+'.png" style="height:90px" class="right">';
       $(".loc5").html(loc5_img);
       var loc6_img = '<img src="images/'+stim.location6+'.png" style="height:90px" class="left">';
       $(".loc6").html(loc6_img);
 
-      //make the boys and girls clickable too
       var boy = '<img src="images/boy.png" style="height:200px" align="buttom">';
       var girl = '<img src="images/girl.png" style="height:200px" align="buttom">';
       $(".loc7").html(boy);
@@ -219,14 +233,17 @@ function make_slides(f) {
       
       $(".loc").bind("click",function(e){
         e.preventDefault();
-        console.log(exp.counter);
         if (exp.counter>2){
           exp.selection_array.push($(this).data().loc)
+          exp.time_array.push(Date.now()-exp.trial_start)
+          console.log("time:" + (Date.now()-exp.trial_start))
           exp.counter = 0;
           $(".loc").unbind('click')
           _s.button();
         } else {
           exp.selection_array.push($(this).data().loc)
+          exp.time_array.push(Date.now()-exp.trial_start)
+          console.log("time:" + (Date.now()-exp.trial_start))
           $(".instruction").html(instruction_array[exp.counter])
           exp.counter++;
         }
@@ -236,6 +253,7 @@ function make_slides(f) {
 
     button : function() {
       console.log("Location array => ",exp.selection_array)
+      console.log("Time array => ",exp.time_array)
       this.log_responses();
       _stream.apply(this); /* use _stream.apply(this); if and only if there is
       "present" data. (and only *after* responses are logged) */
@@ -272,7 +290,8 @@ function make_slides(f) {
         "target_object3" :this.stim.target_object3, 
         "target_figure3" :this.stim.target_figure3, 
         "instruction3" : this.stim.instruction3,
-        "response" : exp.selection_array, 
+        "response_times" : exp.time_array,
+        "response" : exp.selection_array,
     });
 
     }
