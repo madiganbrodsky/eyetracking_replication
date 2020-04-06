@@ -37,6 +37,15 @@
 	<!-- stimuli file -->
 	<script src="js/stimuli.js"></script>
 
+	<script type="text/JavaScript">
+    	$(document).ready(function(){
+	   	var ut_id = "f76f66fc8ddb491c884c44880f1764ba";
+	   	if (UTWorkerLimitReached(ut_id)) {
+	    	$(".slide").hide();
+	    	$("body").html("You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.");
+		}});
+    </script>
+
 </head>
 
 <body onload="init();">
