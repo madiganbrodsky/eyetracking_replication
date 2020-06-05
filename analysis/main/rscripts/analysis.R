@@ -14,16 +14,22 @@ df$response = gsub("\\]","",df$response)
 df$response = gsub("\\'","",df$response)
 df$response = gsub("AOI","",df$response)
 
+df = df %>%
+  group_by(workerid)%>%
+  mutate(trial_number = seq(1:n())) %>%
+  ungroup() %>%
+  mutate(trial_group = ifelse(trial_number<31,"first_half","second_half"))
+
 df = separate(df,response,into=c("click1","click2","click3","click4"),sep=",")
 
 toplot =  df %>%
   filter(ExpFiller=="Exp") %>%
-  select(workerid,condition,size,click1,click2,click3,click4,target1,target2,competitor1,competitor2,instruction3) %>%
+  select(workerid,condition,size,click1,click2,click3,click4,target1,target2,competitor1,competitor2,instruction3,trial_group) %>%
   mutate(ID = row_number()) %>%
   gather(click_number,location,click1:click4) %>%
   mutate(target=ifelse(location==target1,1,ifelse(location==target2,1,0))) %>%
   mutate(competitor=ifelse(location==competitor1,1,ifelse(location==competitor2,1,0))) %>%
-  group_by(condition,size,click_number) %>%
+  group_by(condition,size,click_number,trial_group) %>%
   summarize(m_target=mean(target),m_competitor=mean(competitor),ci_low_target=ci.low(target),ci_high_target=ci.high(target),ci_low_competitor=ci.low(competitor),ci_high_competitor=ci.high(competitor)) %>%
   gather(location,Mean,m_target:m_competitor) %>%
   mutate(CILow=ifelse(location=="m_target",ci_low_target,ifelse(location=="m_competitor",ci_low_competitor,0))) %>%
@@ -31,13 +37,14 @@ toplot =  df %>%
   mutate(YMin=Mean-CILow,YMax=Mean+CIHigh) %>%
   mutate(Region=fct_recode(location,"competitor"="m_competitor","target"="m_target")) %>%
   mutate(Region=fct_rev(Region)) %>%
+  ungroup() %>%
   mutate(click_number=fct_recode(click_number,prior="click1",gender="click2",determiner="click3",noun="click4"))
 
 proportions = ggplot(toplot, aes(x=click_number, y=Mean, group=Region)) +
   geom_line(aes(color=Region),size=1.3) +
   geom_point(aes(color=Region),size=2.5,shape="square") +
   geom_errorbar(aes(ymin=YMin, ymax=YMax), width=.2, alpha=.3) +
-  facet_grid(size ~condition) + 
+  facet_grid(trial_group + size ~condition ) + 
   scale_color_manual(values=c("darkgreen","orange")) +
   xlab("Window") +
   ylab("Proportion of selections") +
@@ -45,7 +52,8 @@ proportions = ggplot(toplot, aes(x=click_number, y=Mean, group=Region)) +
 
 proportions
 
-ggsave(proportions, file="../graphs/proportions.pdf",width=9,height=4.5)
+#ggsave(proportions, file="../graphs/proportions.pdf",width=9,height=4.5)
+ggsave(proportions, file="../graphs/proportions_order.pdf",width=9,height=9)
 
 
 # model
