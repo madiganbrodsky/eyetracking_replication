@@ -8,7 +8,7 @@
 	display: grid;
 	grid-template-columns: auto;
 	grid-template-rows: auto;
-	grid-gap: 0px;
+	grid-gap: 50px;
 	/* background-color: #2196F3; */
 	padding: 0px;
 	align-items: center;

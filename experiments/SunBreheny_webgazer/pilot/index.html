@@ -281,10 +281,16 @@
 
 	<div class="slide" id="practice">
 		<div class="text-center">
-			<p class="sentence"></p>
+			<!-- <p class="sentence"></p> -->
 			<p class="image"></p>
 
 			<button class="second_slide" onclick="_s.second_slide()">Continue</button>
+			<button class="grid_button" onclick="_s.grid()">Continue</button>
+
+			<audio id="stim">
+				<source id="wav_src" src="" type="audio/wav">
+				Your browser does not support the audio element.
+			</audio>
 
 			<div class="grid-container">
 				<div class="loc1 loc" data-loc="AOI1"></div>
@@ -300,8 +306,7 @@
 			</div>
 
 			<div class="err">Please click on one of the children.</div>
-			<button class="grid_button" onclick="_s.grid()">Continue</button>
-
+			<!-- <button class="grid_button" onclick="_s.grid()">Continue</button> -->
 			<!-- <button onclick="_s.button()">Continue</button> -->
 		</div>
 	</div>
@@ -319,7 +324,7 @@
 	<div class="slide" id="trial">
 		<div class="text-center">
 
-			<p class="instruction"></p>
+			<!-- <p class="instruction"></p> -->
 
 			<div class="grid-container">
 				<div class="loc1 loc" data-loc="AOI1"></div>
