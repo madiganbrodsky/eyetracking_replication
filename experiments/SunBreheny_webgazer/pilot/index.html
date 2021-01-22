@@ -29,14 +29,13 @@
 	<link href="css/local-style.css" rel="stylesheet" type="text/css" />
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 
-	<!-- webgazer tools -->
-	<script src="js/webgazer_tools/resize_canvas.js"></script>
-	<script src="js/webgazer_tools/calibration.js"></script>
-	<script src="js/webgazer_tools/main.js"></script>
-	<script src="js/webgazer_tools/precision_calculation.js"></script>
-	<script src="js/webgazer_tools/precision_store_points.js"></script>
-	<script src="js/webgazer_tools/params.mjs"></script>
-	<script src="js/webgazer_tools/webgazer_start_stop.js"></script>
+  <!-- webgazer tools -->
+  <script src="js/webgazer_tools/resize_canvas.js"></script>
+  <script src="js/webgazer_tools/calibration.js"></script>
+  <script src="js/webgazer_tools/main.js"></script>
+  <script src="js/webgazer_tools/precision_calculation.js"></script>
+  <script src="js/webgazer_tools/precision_store_points.js"></script>
+  <script src="js/webgazer_tools/webgazer_start_stop.js"></script>
 
 	<!-- experiment file -->
 	<script src="js/index.js"></script>
@@ -54,12 +53,14 @@
 	<script src="js/webgazer_tools/webgazer.js" type="text/javascript"></script>
 
 	<noscript>This task requires JavaScript.</noscript>
+
 	<div class="slide" id="i0">
 		<div class="text-center">
 			<!-- <img src="mystery_speaker.png" alt="speaker" id="speakerpic"></img> -->
 			<img src="images/alps_lab.png" alt="Alps Lab" style="width:400">
 
-			<p id="study_title"><b> Read the instructions and select the image! </b></p>
+			<p id="study_title"><b> Listen to the description and select the correct image! </b></p>
+			<p>This HIT, including time for reading instructions, will take about 10 minutes.</p>
 
 			<div class="card bg-light mb-3">
 				<div class="card-body">
@@ -79,6 +80,18 @@
 						movements. <br>
 				</div>
 			</div>
+
+			<div class="card border-success mb-3">
+				<div class="card-body">
+				  <h5 class="card-title">Sound</h5>
+				  <p class="card-text">You <b> must </b> be able to play sound on your computer: you won't be able to complete
+					the task satisfactorily if not.
+					<br>
+					<b> If possible, please wear headphones to complete the task. </b>
+				  </p>
+				</div>
+			  </div>
+		
 
 			<div class="card border-success mb-3">
 				<div class="card-body">
@@ -264,20 +277,34 @@
 	<div class="slide" id="instructions">
 		<div class="text-center">
 			<h3>Instructions</h3>
-			<p> You will see a scene with a partial description of it. It is your task to guess which of the children
-				the
-				description is referring to.</p>
-			<img src="images/instruction_image.png" alt="instructions" style="width:500">
+			<p> You will see a scene and hear a description of it. It is your task to guess which of the children the description is referring to.</p>
+			<img align="center" src="images/speaker_icon.png" alt="sound_icon" style="width:50">
+			<strong>"Click on the girl that has some of Susan's apples."</strong>
 			<br>
-			<p>To make a guess, click on one of the children. Whenever you make a guess by clicking, more words of the
-				description will appear.</p>
-
-			<p>Note: sometimes it will be impossible to determine which child the description is referring to until the
-				second or third try and you will have to make a random guess. Good luck!</p>
+			<img src="images/instruction_image.png" alt="instructions" style="width:500">
+			<br><br>
+			<p>To make a guess, click on one of the children.</p>
+			<p><strong>Do not click more than once!</strong></p>
 			<button onclick="_s.button()">Continue</button>
 			<!-- <p><small>*We reserve the right to withhold the bonus for participants who randomly click through the experiment. If you faithfully complete this HIT, you will get a bonus of at least $1.75!</small></p> -->
 		</div>
 	</div>
+
+	<div class="slide" id="sound_test">
+		<div class="text-center">
+		  Press the play button to make sure you can hear the audio clip, and adjust the volume as necessary. You won't be
+		  able to complete the task satisfactorily if you can't hear the audio.
+		  <br>
+		  In the task, the audio will play automatically, and you'll only hear it once - so listen carefully!
+		  <br>
+		  <br>
+		  <audio id="soundtest" controls src='soundtest.mp3'> </audio>
+		  <br>
+		  <br>
+		  <button id="soundtest_OK" onclick="_s.soundtest_OK()"> Click here if you can hear the audio clearly. </button>
+		  </p>
+		</div>
+	  </div>
 
 	<div class="slide" id="practice">
 		<div class="text-center">
@@ -313,9 +340,11 @@
 
 	<div class="slide" id="afterpractice">
 		<div class="text-center">
-
+			<br><br>
 			<h3>Great, now we can start the real experiment.</h3>
-			<!-- <p>Bla bla bla</p> -->
+			<p>Between trials, a red cross will appear at the center of the screen. Stare at the cross without moving your mouse.</p>
+			<!-- same place as fixation cross -->
+			<br><br><br><br><br><br><br><br><br>
 			<button onclick="_s.button()">Continue</button>
 		</div>
 	</div>
@@ -324,7 +353,10 @@
 	<div class="slide" id="trial">
 		<div class="text-center">
 
-			<!-- <p class="instruction"></p> -->
+			<audio id="stim">
+				<source id="wav_src" src="" type="audio/wav">
+				Your browser does not support the audio element.
+			</audio>
 
 			<div class="grid-container">
 				<div class="loc1 loc" data-loc="AOI1"></div>
@@ -338,6 +370,8 @@
 				<div class="loc9 loc" data-loc="AOI9"></div>
 				<div class="loc10 loc" data-loc="AOI10"></div>
 			</div>
+			<!-- fixation cross -->
+			<div class="cross_center"><p style="font-size:30px;color:red">+</p></div>
 
 			<!-- <button onclick="_s.button()">Continue</button> -->
 			<!-- <div class="err">Please adjust the slider before continuing.</div> -->
@@ -380,7 +414,7 @@
 
 			<div class="subj_info_title">About the study </div>
 
-			<!-- <p>Did you wear headphones during the study?:
+			<p>Did you wear headphones during the study?:
 				<select id="headphones">
 				  <label>
 					<option value="-1" /></label>
@@ -391,7 +425,7 @@
 				  <label>
 					<option value="NA" />Rather not say</label>
 				</select>
-			  </p> -->
+			  </p>
 
 			<p>Do you need to wear glasses (or contact lenses) to correct your vision?:
 				<select id="eyesight">

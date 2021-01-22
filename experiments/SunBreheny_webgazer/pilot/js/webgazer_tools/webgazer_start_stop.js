@@ -1,4 +1,5 @@
 function hideVideoElements() {
+  webgazer.showVideoPreview(false);
   webgazer.showPredictionPoints(false);
   webgazer.showVideo(false);
   webgazer.showFaceOverlay(false);

@@ -3,7 +3,6 @@
  * the eye tracker currently is which is displayed to the user
  */
 function calculatePrecision(past50Array) {
-  console.log('called calc precision');
   var windowHeight = $(window).height();
   var windowWidth = $(window).width();
 
@@ -21,7 +20,6 @@ function calculatePrecision(past50Array) {
 
   // Return the precision measurement as a rounded percentage
   return Math.round(precision);
-  console.log(precision);
 };
 
 /*

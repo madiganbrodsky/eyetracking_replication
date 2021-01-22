@@ -21,7 +21,7 @@ function PopUpInstruction(){
   ClearCanvas();
   swal({
     title:"Calibration",
-    text: "Please click on each of the 9 points at the edges of the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.",
+    text: "Please click on each of the 9 points at the edges of the screen. You must click on each point 5 times, until it goes yellow. This will calibrate your eye movements.",
     buttons:{
       cancel: false,
       confirm: true
@@ -92,7 +92,8 @@ function doCalibration(){
 
                   sleep(5000).then(() => {
                       stop_storing_points_variable(); // stop storing the prediction points
-                      var past50 = get_points() // retrieve the stored points
+                      var past50 = webgazer.getStoredPoints(); // retrieve the stored points
+
                       precision_measurement = calculatePrecision(past50);
                       // var precision_measurement = calculatePrecision(past50);
                       var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";

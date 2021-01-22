@@ -48,7 +48,9 @@ function make_slides(f) {
         exp.accuracy_attempts.push(precision_measurement);
         swal({
           title: "Calibration Fail",
-          text: "Either you haven't performed the calibration yet, or your calibration score is too low. Your calibration score must be 50% to begin the task. Please click Recalibrate to try calibrating again.",
+          text: "Either you haven't performed the calibration yet, or your calibration score is too low. \
+           Your calibration score must be 50% to begin the task. Please click Calibrate to try calibrating again. \
+           Click Instructions to see tips for calibrating.",
           buttons: {
             cancel: false,
             confirm: true
@@ -65,6 +67,15 @@ function make_slides(f) {
     }
   });
 
+
+  slides.sound_test = slide({
+    name: "sound_test",
+    soundtest_OK: function (e) {
+      exp.trial_no = 0;
+      exp.go();
+    }
+  });
+
   slides.practice = slide({
     name: "practice",
     start: function () {
@@ -73,7 +84,7 @@ function make_slides(f) {
     },
     present: exp.practice,
     present_handle: function (stim) {
-      //aud.pause();
+      exp.playing = false;
       this.stim = stim;
       $(".second_slide").hide();
       $(".grid_button").hide();
@@ -125,40 +136,44 @@ function make_slides(f) {
       exp.rt = 0; //TODO - del
       exp.trial_start = Date.now();
 
-      // play audio
-      var aud = document.getElementById("stim");
-      console.log(this.stim.prime);
-      aud.src = "audio/" + this.stim.prime + ".wav";
-      // aud.load();
-      // aud.currentTime = 0;
-      aud.play();
-      var playing = true;
-
+    
       // display images
-      var loc1_img = '<img src="images/' + this.stim.location1 + '.png"style="height:100px" class="left">';
+      var loc1_img = '<img src="images/' + this.stim.location1 + '.png"style="height:90px" class="left">';
       $(".loc1").html(loc1_img);
-      var loc2_img = '<img src="images/' + this.stim.location2 + '.png" style="height:100px" class="center">';
+      var loc2_img = '<img src="images/' + this.stim.location2 + '.png" style="height:90px" class="center">';
       $(".loc2").html(loc2_img);
-      var loc3_img = '<img src="images/' + this.stim.location3 + '.png" style="height:100px" class="center">';
+      var loc3_img = '<img src="images/' + this.stim.location3 + '.png" style="height:90px" class="center">';
       $(".loc3").html(loc3_img);
-      var loc4_img = '<img src="images/' + this.stim.location4 + '.png" style="height:100px" class="center">';
+      var loc4_img = '<img src="images/' + this.stim.location4 + '.png" style="height:90px" class="center">';
       $(".loc4").html(loc4_img);
-      var loc5_img = '<img src="images/' + this.stim.location5 + '.png" style="height:90px" class="right">';
+      var loc5_img = '<img src="images/' + this.stim.location5 + '.png" style="height:70px" class="right">';
       $(".loc5").html(loc5_img);
-      var loc6_img = '<img src="images/' + this.stim.location6 + '.png" style="height:90px" class="left">';
+      var loc6_img = '<img src="images/' + this.stim.location6 + '.png" style="height:70px" class="left">';
       $(".loc6").html(loc6_img);
-      var boy = '<img src="images/boy.png" style="height:200px" align="buttom">';
-      var girl = '<img src="images/girl.png" style="height:200px" align="buttom">';
+      var boy = '<img src="images/boy.png" style="height:160px" align="buttom">';
+      var girl = '<img src="images/girl.png" style="height:160px" align="buttom">';
       $(".loc7").html(boy);
       $(".loc8").html(boy);
       $(".loc9").html(girl);
       $(".loc10").html(girl);
       $(".grid-container").show();
 
-      // when audio ends
-      aud.addEventListener('ended', function () {
-        playing = false;
-      }, false);
+      exp.prime = this.stim.prime
+      setTimeout(function () {
+        aud = document.getElementById("stim");
+        aud.src = "audio/" + exp.prime + ".wav";
+        aud.currentTime = 0;
+        aud.play();
+        console.log("Play audio")
+        exp.audio_play_unix = Date.now();
+        exp.playing = true;
+
+        // when audio ends
+        aud.addEventListener('ended', function () {
+          exp.playing = false;
+        }, false);
+
+      }, 1000);
 
       // make images clickable
       $(".loc").bind("click", function (e) {
@@ -169,7 +184,7 @@ function make_slides(f) {
           $(".err").show();
           console.log("should show error");
         } else {
-          if (playing == false) {
+          if (exp.playing == false) {
             exp.selection = loc;
             exp.rt = (Date.now() - exp.trial_start);
             $(".loc").unbind('click')
@@ -235,12 +250,14 @@ function make_slides(f) {
     start: function () {
     },
     present_handle: function (stim) {
+      $(".cross_center").hide();
       exp.selection;
       exp.rt = 0;
       exp.unix_rt = 0;
       exp.trial_start = Date.now();
+      exp.playing = false;
       console.log("******************************")
-      console.log("start time: ", exp.trial_start)
+      console.log("Trial start: ", exp.trial_start)
 
       $(".err").hide();
       $(".grid-container").show();
@@ -249,32 +266,24 @@ function make_slides(f) {
       // var instruction = stim.instruction3;
       // $(".instruction").html(instruction);
 
-      var loc1_img = '<img src="images/' + stim.location1 + '.png"style="height:100px" class="left">';
+      var loc1_img = '<img src="images/' + stim.location1 + '.png"style="height:90px" class="left">';
       $(".loc1").html(loc1_img);
-      var loc2_img = '<img src="images/' + stim.location2 + '.png" style="height:100px" class="center">';
+      var loc2_img = '<img src="images/' + stim.location2 + '.png" style="height:90px" class="center">';
       $(".loc2").html(loc2_img);
-      var loc3_img = '<img src="images/' + stim.location3 + '.png" style="height:100px" class="center">';
+      var loc3_img = '<img src="images/' + stim.location3 + '.png" style="height:90px" class="center">';
       $(".loc3").html(loc3_img);
-      var loc4_img = '<img src="images/' + stim.location4 + '.png" style="height:100px" class="center">';
+      var loc4_img = '<img src="images/' + stim.location4 + '.png" style="height:90px" class="center">';
       $(".loc4").html(loc4_img);
-      var loc5_img = '<img src="images/' + stim.location5 + '.png" style="height:90px" class="right">';
+      var loc5_img = '<img src="images/' + stim.location5 + '.png" style="height:70px" class="right">';
       $(".loc5").html(loc5_img);
-      var loc6_img = '<img src="images/' + stim.location6 + '.png" style="height:90px" class="left">';
+      var loc6_img = '<img src="images/' + stim.location6 + '.png" style="height:70px" class="left">';
       $(".loc6").html(loc6_img);
-      var boy = '<img src="images/boy.png" style="height:200px" align="buttom">';
-      var girl = '<img src="images/girl.png" style="height:200px" align="buttom">';
+      var boy = '<img src="images/boy.png" style="height:160px" align="buttom">';
+      var girl = '<img src="images/girl.png" style="height:160px" align="buttom">';
       $(".loc7").html(boy);
       $(".loc8").html(boy);
       $(".loc9").html(girl);
       $(".loc10").html(girl);
-
-      // play audio
-      var aud = document.getElementById("stim");
-      console.log(this.stim.Prime);
-      aud.src = "audio/" + this.stim.Prime + ".wav";
-      aud.currentTime = 0;
-      aud.play();
-      var playing = true;
 
       if (!exp.DUMMY_MODE) {
         hideVideoElements();
@@ -284,8 +293,6 @@ function make_slides(f) {
           if (data == null) {
             return;
           }
-          //console.log("pushed gaze data")
-          //console.log("elapsed time: ", elapsedTime)
           var xprediction = data.x;
           var yprediction = data.y;
           var unixtime = Date.now(); // unix timestamp - so you have absolute timestamps
@@ -297,16 +304,31 @@ function make_slides(f) {
         });
       }
 
-      // when audio ends
-      aud.addEventListener('ended', function () {
-        playing = false;
-      }, false);
+      console.log("Wait 1sec")
+
+      exp.prime = this.stim.Prime
+
+      setTimeout(function () {
+        aud = document.getElementById("stim");
+        aud.src = "audio/" + exp.prime + ".wav";
+        aud.currentTime = 0;
+        aud.play();
+        console.log("Play audio")
+        exp.audio_play_unix = Date.now();
+        exp.playing = true;
+
+        // when audio ends
+        aud.addEventListener('ended', function () {
+          exp.playing = false;
+        }, false);
+
+      }, 1000);
+
 
       // make images clickable
       $(".loc").bind("click", function (e) {
         e.preventDefault();
-        if (playing == false) {
-          console.log("CLICKED AND DONE PLAYING")
+        if (exp.playing == false) {
           exp.selection = $(this).data().loc
           exp.unix_rt = Date.now();
           $(".loc").unbind('click')
@@ -321,12 +343,20 @@ function make_slides(f) {
       console.log("Selection: ", exp.selection);
       console.log("RT: ", exp.rt);
       console.log("Unix RT: ", exp.unix_rt);
+      console.log("Audio play unix: ", exp.audio_play_unix)
       this.log_responses();
       exp.tlist = [];
       exp.unixtlist = [];
       exp.xlist = [];
       exp.ylist = [];
-      _stream.apply(this);
+      
+      // fixation cross
+      exp.this = this
+      $(".grid-container").hide();
+      $(".cross_center").show();
+      setTimeout(function () {
+        _stream.apply(exp.this);
+      }, 1000);
     },
     log_responses: function () {
       exp.data_trials.push({
@@ -352,7 +382,7 @@ function make_slides(f) {
         "size": this.stim.size,
         "determiner": this.stim.determiner,
         "target1": this.stim.target1,
-        "target2" : this.stim.target2,
+        "target2": this.stim.target2,
         "competitor1": this.stim.competitor1,
         "competitor2": this.stim.competitor2,
         "target_num_object": this.stim.target_object3,
@@ -363,6 +393,7 @@ function make_slides(f) {
         "response": exp.selection,
         "response_time": exp.rt,
         "unix_time": exp.unix_rt,
+        "audio_play_unix": exp.audio_play_unix,
         "webgazer_time": exp.tlist,
         'x': exp.xlist,
         'y': exp.ylist
@@ -376,7 +407,7 @@ function make_slides(f) {
       lg = $("#language").val();
       age = $("#participantage").val();
       gender = $("#gender").val();
-      // headphones = $("#headphones").val();
+      headphones = $("#headphones").val();
       eyesight = $("#eyesight").val();
       eyesight_task = $("#eyesight_task").val();
       payfair = $("#pay_fair").val();
@@ -480,9 +511,9 @@ function init() {
 
   if (!exp.DUMMY_MODE) {
     // exp.structure = ["i0", "training_and_calibration", "startPage", "instructions", "trial", 'subj_info', 'thanks'];
-    exp.structure = ["i0", "training_and_calibration", "startPage", "instructions", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];
+    exp.structure = ["i0", "training_and_calibration", "startPage", "instructions", "sound_test", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];
   } else {
-    exp.structure = ["i0", "startPage", "instructions", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];
+    exp.structure = ["i0", "startPage", "instructions", "sound_test", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];
   }
 
   exp.data_trials = [];
