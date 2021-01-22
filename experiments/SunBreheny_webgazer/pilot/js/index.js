@@ -461,17 +461,18 @@ function init() {
 
   function preload() {
     for (pos in exp.stims) {
+      // console.log("audio/" + exp.stims[pos].Prime + ".wav")
       new Audio().src = "audio/" + exp.stims[pos].Prime + ".wav";
     };
     console.log("loaded all the audio");
-    // for (pos in exp.stims){
-    //   for (var i = 1; i <= 10; i++) {
-    //     console.log(i)
-    //     console.log(exp.stims[pos].location+'i')
-    //     // new Image().src = "images/" + exp.stims[pos].location+'i' + ".png";
-    //   };
-    // };
-    // console.log("loaded all the images"); TODO: FIX
+    for (pos in exp.stims){
+      for (var i = 1; i <= 10; i++) {
+        var locnum = "location" + i;
+        // console.log("images/" + exp.stims[pos][locnum] +  ".png")
+        new Image().src = "images/" + exp.stims[pos][locnum] +  ".png";
+      };
+    };
+    console.log("loaded all the images");
   };
   preload();
 
