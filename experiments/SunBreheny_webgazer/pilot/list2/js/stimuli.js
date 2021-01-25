@@ -30,7 +30,7 @@ exp.practice = [
         determiner1: "some",
         object1: "apples",
         instruction1: "Click on the boy that has some of Susan's apples",
-        prime: "BoySomeSusanapples",
+        prime: "BoySomeSusanApples",
         correctAns1: "AOI1",
         correctAns2: "AOI7"
     },
@@ -65,7 +65,7 @@ exp.practice = [
         determiner1: "all",
         object1: "pears",
         instruction1: "Click on the boy that has all of Susan's pears",
-        prime: "BoyAllSusanpears",
+        prime: "BoyAllSusanPears",
         correctAns1: "AOI2",
         correctAns2: "AOI8"
     },
@@ -100,7 +100,7 @@ exp.practice = [
         determiner1: "all",
         object1: "erasers",
         instruction1: "Click on the girl that has all of Michael's erasers",
-        prime: "GirlAllMichaelerasers",
+        prime: "GirlAllMichaelErasers",
         correctAns1: "AOI3",
         correctAns2: "AOI9"
     },
@@ -135,7 +135,7 @@ exp.practice = [
         determiner1: "two",
         object1: "rulers",
         instruction1: "Click on the girl that has two of Michael's rulers",
-        prime: "GirlTwoMichaelrulers",
+        prime: "GirlTwoMichaelRulers",
         correctAns1: "AOI4",
         correctAns2: "AOI10"
     },
@@ -170,7 +170,7 @@ exp.practice = [
         determiner1: "three",
         object1: "spoons",
         instruction1: "Click on the boy that has three of Amy's spoons",
-        prime: "BoyThreeAmyspoons",
+        prime: "BoyThreeAmySpoons",
         correctAns1: "AOI1",
         correctAns2: "AOI7"
     },
@@ -205,7 +205,7 @@ exp.practice = [
         determiner1: "some",
         object1: "knives",
         instruction1: "Click on the girl that has some of Amy's knives",
-        prime: "GirlSomeAmyknives",
+        prime: "GirlSomeAmyKnives",
         correctAns1: "AOI3",
         correctAns2: "AOI9"
 	}];
