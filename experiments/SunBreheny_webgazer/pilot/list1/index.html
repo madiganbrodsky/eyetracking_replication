@@ -1,3 +1,5 @@
+
+<!DOCTYPE HTML>
 <html>
 
 <head>
@@ -126,13 +128,15 @@
 						<br>
 						<b> Your current browser width is: <span id="width"></span></b>
 						<br>
-						<b> Your current browser height is: <span id="height"></span></b>
+						<b> Your current browser height is: <span id="height1"></span></b>
 
 						<script>
 							$(window).resize(function () {
 								$("#width").html($(window).width());
-								$("#height").html($(window).height());
-							}).resize(); </script>
+								$("#height1").html($(window).height());
+								// have to have <!DOCTYPE HTML> at the top for this..?
+							}).resize(); 
+						</script>
 
 				</div>
 			</div>

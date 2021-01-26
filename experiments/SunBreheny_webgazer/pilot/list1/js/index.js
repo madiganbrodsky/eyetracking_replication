@@ -364,6 +364,7 @@ function make_slides(f) {
         "unix_rt": exp.unix_rt,
         "audio_play_unix": exp.audio_play_unix,
         "webgazer_time": exp.tlist,
+        "unixtlist" : exp.unixtlist,
         'x': exp.xlist,
         'y': exp.ylist
       });
@@ -478,7 +479,6 @@ function init() {
   // exp.structure = ["i0", "training_and_calibration", "startPage","instructions"];
 
   if (!exp.DUMMY_MODE) {
-    // exp.structure = ["i0", "training_and_calibration", "startPage", "instructions", "trial", 'subj_info', 'thanks'];
     exp.structure = ["i0", "training_and_calibration", "startPage", "instructions", "sound_test", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];
   } else {
     exp.structure = ["i0", "startPage", "instructions", "sound_test", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];

@@ -1,0 +1,68 @@
+.slider {
+  /* default is width 400 and margin 10 */
+	width: 400;
+	margin: 10px;
+}
+
+.grid-container {
+	display: grid;
+	grid-template-columns: auto;
+	grid-template-rows: auto;
+	grid-gap: 0px;
+	padding: 0px;
+	align-items: center;
+	justify-items: center;
+}
+  
+.grid-container > div {
+	/* background-color: rgba(255, 255, 255, 0.8); */
+	text-align: center;
+	padding: 0px 0px;
+	font-size: 30px;
+}
+  
+.loc1 {
+	float:left;
+	vertical-align: middle;
+}
+.loc2 {
+	float:left;
+	vertical-align: middle;
+}
+.loc3 {
+	float:right;
+	vertical-align: middle;
+}
+.loc4 {
+	float:right;
+	vertical-align: middle;
+}
+.loc5 {
+	margin-left: auto;
+	vertical-align: middle;
+}
+.loc6 {
+	margin-right: auto;
+	vertical-align: middle;
+}
+.loc7 {
+	float:left;
+	vertical-align: top;
+}
+.loc8 {
+	float:left;
+	vertical-align: bottom;
+}
+.loc9 {
+	float:right;
+	vertical-align: top;
+}
+.loc10 {
+	float:right;
+	vertical-align: bottom;
+}
+
+.cross_center{
+    position:relative;
+    top: calc(40vh);
+}

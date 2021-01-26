@@ -11,17 +11,6 @@ This study is a replication of Sun & Breheny (2019) with the web-based eye-track
 
 [Here](https://madiganbrodsky.github.io/eyetracking_replication/experiments/SunBreheny_webgazer/pilot/list1)'s the experiment we're analyzing.
 
-1. Subjects listened to instructions like "Click on the boy with some of Susan's apples" in a web-based 4AFC visual world paradigm.
-2. Subjects clicked on the target object after each instruction to advance to the next trial.
-
-Preprocessing
-
-* Trials with wrong selections were removed.
-
-Analysis
-
-* TODO
-
 ```{r, message=F, warning=F}
 library(tidyverse)
 library(lme4)
@@ -39,9 +28,14 @@ cbPalette <- c("#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#
 
 # load data 
 d = read.csv('../data/sunbreheny_webgazer_pilot-merged.csv') %>%
+  select(-location1,-location2,-location3,-location4,-location5,-location6,-location7,-location8,-location9,-location10,-target_figure,-target_object,-target_num_object,-error) %>% 
   filter(trial_type=="Exp") %>%
   mutate(target_location = ifelse((target1==7 | target2==7),"topleft",ifelse((target1==8 | target2==8),"bottomleft",ifelse((target1==9 | target2==9),"topright",ifelse((target1==10 | target2==10),"bottomright",NA))))) %>%
-  mutate(competitor_location = ifelse((competitor1==7 | competitor2==7),"topleft",ifelse((competitor1==8 | competitor2==8),"bottomleft",ifelse((competitor1==9 | competitor2==9),"topright",ifelse((competitor1==10 | competitor2==10),"bottomright", NA)))))
+  mutate(competitor_location = ifelse((competitor1==7 | competitor2==7),"topleft",ifelse((competitor1==8 | competitor2==8),"bottomleft",ifelse((competitor1==9 | competitor2==9),"topright",ifelse((competitor1==10 | competitor2==10),"bottomright", NA))))) %>%
+  left_join(audio_info,by=c("audio" = "Prime")) #%>% #for testing: TODO
+  #filter(as.character(proliferate.condition)!= "list1") %>%
+  #filter(as.character(proliferate.condition)!= "list2") %>%
+  #filter(as.character(proliferate.condition)!= "list2") %>%
 
 # formatting
 d$webgazer_time = gsub("\\[","",d$webgazer_time)
@@ -53,10 +47,9 @@ d$y = gsub("\\]","",d$y)
 ```
 
 
-Compute accuracy and exclude trials with wrong selections.
+Exclude trials with wrong selections and plot subject information.
 ```{r,message=F,warning=F}
 d = d %>% 
-  #select(response,target1,target2,correctAns1,correctAns2) %>%
   mutate(selection_correct = ifelse(as.character(response) == as.character(correctAns1),1, ifelse(as.character(response) == as.character(correctAns2),1,0)),language = tolower(subject_information.language))
 
 table(d$selection_correct)
@@ -116,12 +109,10 @@ imgheight = 200 # boy/girl (taller than objects)
 center_imgwidth = 220 # objects
 center_imgheight = 110 # objects
 
-#TODO: ask judith
 scene_width = 1280 # everything takes place in a central 'scene' of  1280 x 750 pixels 
 scene_height = 750 
 
 dd = d %>%
-  #select(workerid,webgazer_time,x,y,system.windowW,system.windowH) %>%
   separate_rows(webgazer_time,x,y,convert=TRUE, sep=",") %>% 
   mutate(x_center = (system.windowW/2), y_center = (system.windowH/2),
            AOI_topleft_x_min = x_center - (scene_width/2),
@@ -159,12 +150,23 @@ dd = d %>%
                          look==competitor_location ~ "competitor",
                          look=="center" ~ "center",
                          TRUE ~ "other")) %>%
-  mutate(target_look = ifelse(ROI == "target", 1, 0), competitor_look = ifelse(ROI == "competitor", 1, 0), center_look = ifelse(ROI == "center", 1, 0), other_look = ifelse(ROI == "other", 1, 0)) %>% 
-  select(workerid,displayID,look,target_location,competitor_location,x,y) %>%
-  filter(look!="other")
+  mutate(target_look = ifelse(ROI == "target", 1, 0), competitor_look = ifelse(ROI == "competitor", 1, 0), center_look = ifelse(ROI == "center", 1, 0), other_look = ifelse(ROI == "other", 1, 0)) #%>%
+  filter(look!="other") #TODO: remove other looks outside window?
 
 # sanity check that ROIs are getting correctly assigned
 ggplot(dd, aes(x=x,y=y,color=look)) +
   geom_point() +
-  facet_wrap(~workerid, scales="free")
+  facet_wrap(~workerid)
+```
+
+Bin samples and align time to the onset of words.
+```{r,message=F,warning=F}
+# relevant time variables:
+# trial_start: unix time at the beginning of the trial (when images are displayed)
+# audio_play_unix: unix time at the beginning of the audio (after 1sec display preview)
+# webgazer_time: elapsed time since webgazer started
+# unix_tlist: unix time of each webgazer_time sample
+# unix_rt: unix time of selection
+# response_time: response time in msec (trial_start - unix_rt)
+
 ```
