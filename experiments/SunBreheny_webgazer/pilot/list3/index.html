@@ -29,13 +29,13 @@
 	<link href="css/local-style.css" rel="stylesheet" type="text/css" />
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 
-  <!-- webgazer tools -->
-  <script src="js/webgazer_tools/resize_canvas.js"></script>
-  <script src="js/webgazer_tools/calibration.js"></script>
-  <script src="js/webgazer_tools/main.js"></script>
-  <script src="js/webgazer_tools/precision_calculation.js"></script>
-  <script src="js/webgazer_tools/precision_store_points.js"></script>
-  <script src="js/webgazer_tools/webgazer_start_stop.js"></script>
+	<!-- webgazer tools -->
+	<script src="js/webgazer_tools/resize_canvas.js"></script>
+	<script src="js/webgazer_tools/calibration.js"></script>
+	<script src="js/webgazer_tools/main.js"></script>
+	<script src="js/webgazer_tools/precision_calculation.js"></script>
+	<script src="js/webgazer_tools/precision_store_points.js"></script>
+	<script src="js/webgazer_tools/webgazer_start_stop.js"></script>
 
 	<!-- experiment file -->
 	<script src="js/index.js"></script>
@@ -83,15 +83,16 @@
 
 			<div class="card border-success mb-3">
 				<div class="card-body">
-				  <h5 class="card-title">Sound</h5>
-				  <p class="card-text">You <b> must </b> be able to play sound on your computer: you won't be able to complete
-					the task satisfactorily if not.
-					<br>
-					<b> If possible, please wear headphones to complete the task. </b>
-				  </p>
+					<h5 class="card-title">Sound</h5>
+					<p class="card-text">You <b> must </b> be able to play sound on your computer: you won't be able to
+						complete
+						the task satisfactorily if not.
+						<br>
+						<b> If possible, please wear headphones to complete the task. </b>
+					</p>
 				</div>
-			  </div>
-		
+			</div>
+
 
 			<div class="card border-success mb-3">
 				<div class="card-body">
@@ -118,7 +119,7 @@
 					<h5 class="card-title"> Browser Size</h5>
 					<p class="card-text">
 						Please maximize your browser window, and keep it maximized throughout the task.
-						Your browser window must be at least 1280 pixels wide and 650 pixels tall, while fitting within
+						Your browser window must be at least 1280 pixels wide and 750 pixels tall, while fitting within
 						your
 						computer display. You must be able to see everything in the browser window.
 						<br>
@@ -184,9 +185,8 @@
 			<br>
 			<br>
 			<p id="windowsize_err">
-				<font color="red"> Your browser window must be at least 1280 pixels wide and 650 pixels tall. Please
-					maximize
-					it. If you cannot, please return the study. </font>
+				<font color="red"> Your browser window must be at least 1280 pixels wide and 750 pixels tall. Please
+					maximize it. If you cannot, please return the study. </font>
 			</p>
 
 			<button id="start_button" type="button">Start</button> <br><br>
@@ -220,7 +220,6 @@
 			</div>
 		</div>
 	</div>
-
 
 	<div class="slide" id="training_and_calibration">
 		<!-- <p> CALIBRATION INSTRUCTIONS </p> -->
@@ -277,7 +276,8 @@
 	<div class="slide" id="instructions">
 		<div class="text-center">
 			<h3>Instructions</h3>
-			<p> You will see a scene and hear a description of it. It is your task to guess which of the children the description is referring to.</p>
+			<p> You will see a scene and hear a description of it. It is your task to guess which of the children the
+				description is referring to.</p>
 			<img align="center" src="images/speaker_icon.png" alt="sound_icon" style="width:50">
 			<strong>"Click on the girl that has some of Susan's apples."</strong>
 			<br>
@@ -292,19 +292,21 @@
 
 	<div class="slide" id="sound_test">
 		<div class="text-center">
-		  Press the play button to make sure you can hear the audio clip, and adjust the volume as necessary. You won't be
-		  able to complete the task satisfactorily if you can't hear the audio.
-		  <br>
-		  In the task, the audio will play automatically, and you'll only hear it once - so listen carefully!
-		  <br>
-		  <br>
-		  <audio id="soundtest" controls src='soundtest.mp3'> </audio>
-		  <br>
-		  <br>
-		  <button id="soundtest_OK" onclick="_s.soundtest_OK()"> Click here if you can hear the audio clearly. </button>
-		  </p>
+			Press the play button to make sure you can hear the audio clip, and adjust the volume as necessary. You
+			won't be
+			able to complete the task satisfactorily if you can't hear the audio.
+			<br>
+			In the task, the audio will play automatically, and you'll only hear it once - so listen carefully!
+			<br>
+			<br>
+			<audio id="soundtest" controls src='soundtest.mp3'> </audio>
+			<br>
+			<br>
+			<button id="soundtest_OK" onclick="_s.soundtest_OK()"> Click here if you can hear the audio clearly.
+			</button>
+			</p>
 		</div>
-	  </div>
+	</div>
 
 	<div class="slide" id="practice">
 		<div class="text-center">
@@ -319,22 +321,50 @@
 				Your browser does not support the audio element.
 			</audio>
 
-			<div class="grid-container">
-				<div class="loc1 loc" data-loc="AOI1"></div>
-				<div class="loc2 loc" data-loc="AOI2"></div>
-				<div class="loc3 loc" data-loc="AOI3"></div>
-				<div class="loc4 loc" data-loc="AOI4"></div>
-				<div class="loc5 loc" data-loc="AOI5"></div>
-				<div class="loc6 loc" data-loc="AOI6"></div>
-				<div class="loc7 loc" data-loc="AOI7"></div>
-				<div class="loc8 loc" data-loc="AOI8"></div>
-				<div class="loc9 loc" data-loc="AOI9"></div>
-				<div class="loc10 loc" data-loc="AOI10"></div>
-			</div>
+			<div class="imgwrapper" id="imgwrapper">
+					<table id="img_table" width=1280>
+						<tr>
+							<td width="425" height=250>
+								<img id="7" class='loc7' height=200 width=107><img>
+								<img id="1" class='loc1' height=110 width=110><img>
+							</td>
+							<td width="425" height=250>
+								<!-- empty -->
+							</td>
+							<td width="425" height=250>
+								<img id="3" class='loc3' height=110 width=110><img>
+								<img id="9" class='loc9' height=200 width=107><img>
+							</td>
+						</tr>
+						<tr>
+							<td width="425" height=250>
+								<!-- empty -->
+							</td>
+							<td width="425" height=250 align="center">
+								<img id="5" class='loc5' height=110 width=110><img>
+								<img id="6" class='loc6' height=110 width=110><img>
+							</td>
+							<td width="425" height=250>
+								<!-- empty -->
+							</td>
+						</tr>
+						<tr>
+							<td width="425" height=250>
+								<img id="8" class='loc8' height=200 width=107><img>
+								<img id="2" class='loc2' height=110 width=110><img>
+							</td>
+							<td width="425" height=180>
+								<!-- empty -->
+							</td>
+							<td width="425" height=250>
+								<img id="4" class='loc4' height=110 width=110><img>
+								<img id="10" class='loc10' height=200 width=107><img>
+							</td>
+						</tr>
+					</table>
+				</div>
 
 			<div class="err">Please click on one of the children.</div>
-			<!-- <button class="grid_button" onclick="_s.grid()">Continue</button> -->
-			<!-- <button onclick="_s.button()">Continue</button> -->
 		</div>
 	</div>
 
@@ -342,7 +372,9 @@
 		<div class="text-center">
 			<br><br>
 			<h3>Great, now we can start the real experiment.</h3>
-			<p>Between trials, a red cross will appear at the center of the screen. Stare at the cross without moving your mouse.</p>
+			<p>Between trials, a red cross will appear at the center of the screen. Stare at the cross without
+				moving
+				your mouse.</p>
 			<!-- same place as fixation cross -->
 			<br><br><br><br><br><br><br><br><br>
 			<button onclick="_s.button()">Continue</button>
@@ -358,30 +390,62 @@
 				Your browser does not support the audio element.
 			</audio>
 
-			<div class="grid-container">
-				<div class="loc1 loc" data-loc="AOI1"></div>
-				<div class="loc2 loc" data-loc="AOI2"></div>
-				<div class="loc3 loc" data-loc="AOI3"></div>
-				<div class="loc4 loc" data-loc="AOI4"></div>
-				<div class="loc5"></div>
-				<div class="loc6"></div>
-				<div class="loc7 loc" data-loc="AOI7"></div>
-				<div class="loc8 loc" data-loc="AOI8"></div>
-				<div class="loc9 loc" data-loc="AOI9"></div>
-				<div class="loc10 loc" data-loc="AOI10"></div>
+			<!-- visual stimuli go here -->
+			<div class="imgwrapper" id="imgwrapper">
+				<table id="img_table" width=1280>
+					<tr>
+						<td width="425" height=250>
+							<img id="7" class='loc7' height=200 width=107><img>
+							<img id="1" class='loc1' height=110 width=110><img>
+						</td>
+						<td width="425" height=250>
+							<!-- empty -->
+						</td>
+						<td width="425" height=250>
+							<img id="3" class='loc3' height=110 width=110><img>
+							<img id="9" class='loc9' height=200 width=107><img>
+						</td>
+					</tr>
+					<tr>
+						<td width="425" height=250>
+							<!-- empty -->
+						</td>
+						<td width="425" height=250 align="center">
+							<img id="5" class='loc5' height=110 width=110><img>
+							<img id="6" class='loc6' height=110 width=110><img>
+						</td>
+						<td width="425" height=250>
+							<!-- empty -->
+						</td>
+					</tr>
+					<tr>
+						<td width="425" height=250>
+							<img id="8" class='loc8' height=200 width=107><img>
+							<img id="2" class='loc2' height=110 width=110><img>
+						</td>
+						<td width="425" height=180>
+							<!-- empty -->
+						</td>
+						<td width="425" height=250>
+							<img id="4" class='loc4' height=110 width=110><img>
+							<img id="10" class='loc10' height=200 width=107><img>
+						</td>
+					</tr>
+				</table>
 			</div>
-			<!-- fixation cross -->
-			<div class="cross_center"><p style="font-size:30px;color:red">+</p></div>
 
-			<!-- <button onclick="_s.button()">Continue</button> -->
-			<!-- <div class="err">Please adjust the slider before continuing.</div> -->
+			<!-- fixation cross -->
+			<div class="cross_center">
+				<p style="font-size:30px;color:red">+</p>
+			</div>
 		</div>
 	</div>
 
 
 	<div class="slide" id="subj_info">
 		<div class="text-center">
-			<p class="subj_info_title">Please answer the brief questions below. Your answers won't affect whether or how
+			<p class="subj_info_title">Please answer the brief questions below. Your answers won't affect whether or
+				how
 				you
 				get paid for your work.</p>
 			<br>
@@ -416,16 +480,16 @@
 
 			<p>Did you wear headphones during the study?:
 				<select id="headphones">
-				  <label>
-					<option value="-1" /></label>
-				  <label>
-					<option value="no" />No</label>
-				  <label>
-					<option value="yes" />Yes</label>
-				  <label>
-					<option value="NA" />Rather not say</label>
+					<label>
+						<option value="-1" /></label>
+					<label>
+						<option value="no" />No</label>
+					<label>
+						<option value="yes" />Yes</label>
+					<label>
+						<option value="NA" />Rather not say</label>
 				</select>
-			  </p>
+			</p>
 
 			<p>Do you need to wear glasses (or contact lenses) to correct your vision?:
 				<select id="eyesight">
@@ -456,14 +520,18 @@
 				</select>
 			</p>
 
-			<!--               <p> Do you think the pay is fair for the study?
-					  <select id="pay_fair">
-						<label><option value="-1"/></label>
-						<label><option value="Yes"/>Yes</label>
-						<label><option value="No"/>No</label>
-						<label><option value="NA"/>Rather not say</label>
-					  </select>
-					</p> -->
+			<p> Do you think the pay is fair for the study?
+				<select id="pay_fair">
+					<label>
+						<option value="-1" /></label>
+					<label>
+						<option value="Yes" />Yes</label>
+					<label>
+						<option value="No" />No</label>
+					<label>
+						<option value="NA" />Rather not say</label>
+				</select>
+			</p>
 
 			<p> Could you see the camera video during the study - i.e., after the Calibration?
 				<select id="camblock">
@@ -496,8 +564,8 @@
 		<p class="big">Thanks for your time!</p>
 	</div>
 
-
-	<!-- <div class="progress">
+	<!-- 
+	<div class="progress">
 		<span>Progress:</span>
 		<div class="bar-wrapper">
 			<div class="bar" width="0%">

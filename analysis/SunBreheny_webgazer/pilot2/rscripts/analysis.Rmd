@@ -1,0 +1,178 @@
+---
+title: "Sun & Breheny (2019) webgazer replication"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+This study is a replication of Sun & Breheny (2019) with the web-based eye-tracking paradigm using the javascript webgazer library.
+
+The main research question is: TODO
+
+Answer: TODO
+
+[Here](https://madiganbrodsky.github.io/eyetracking_replication/experiments/SunBreheny_webgazer/pilot/list1)'s the experiment we're analyzing.
+
+**Participants:** TODO participants were recruited through Prolific.
+
+**Materials:**TODO
+
+**Procedure:**
+
+1. Subjects listened to instructions like "Click on the boy with some of Susan's apples" in a web-based 4AFC visual world paradigm.
+2. Subjects clicked on the target object after each instruction to advance to the next trial.
+
+**Results:**
+
+Preprocessing
+
+* Trials with wrong selections were removed. **TODO**
+
+Analysis **TODO**
+
+* computed regions of interest: target, competitor, center, other
+* aligned time relative to target word onset and binned samples into **60**ms bins
+* plotted proportions of looks over time (all regions vs just target and competitor)
+* **additional analyses?**
+
+```{r, message=F, warning=F}
+library(tidyverse)
+library(lme4)
+library(ggplot2)
+
+# set directory
+# this.dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+# setwd(this.dir)
+
+# load helper scripts
+source("helpers.R")
+
+# load target word onsets
+
+# set color-blind-friendly color palette
+cbPalette <- c("#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73")
+
+# load data 
+d = read.csv('../data/sunbreheny_webgazer_pilot-merged.csv') %>%
+  filter(trial_type=="Exp") %>%
+  mutate(target_location = ifelse((target1==7 | target2==7),"topleft",ifelse((target1==8 | target2==8),"bottomleft",ifelse((target1==9 | target2==9),"topright",ifelse((target1==10 | target2==10),"bottomright",NA))))) %>%
+  mutate(competitor_location = ifelse((competitor1==7 | competitor2==7),"topleft",ifelse((competitor1==8 | competitor2==8),"bottomleft",ifelse((competitor1==9 | competitor2==9),"topright",ifelse((competitor1==10 | competitor2==10),"bottomright", NA)))))
+
+# formatting
+d$webgazer_time = gsub("\\[","",d$webgazer_time)
+d$webgazer_time= gsub("\\]","",d$webgazer_time)
+d$x = gsub("\\[","",d$x)
+d$x = gsub("\\]","",d$x)
+d$y = gsub("\\[","",d$y)
+d$y = gsub("\\]","",d$y)
+```
+
+
+Compute accuracy and exclude trials with wrong selections.
+```{r,message=F,warning=F}
+d = d %>% 
+  #select(response,target1,target2,correctAns1,correctAns2) %>%
+  mutate(selection_correct = ifelse(as.character(response) == as.character(correctAns1),1, ifelse(as.character(response) == as.character(correctAns2),1,0)),language = tolower(subject_information.language))
+
+table(d$selection_correct)
+
+d = d %>% 
+  filter(selection_correct==1)
+
+participants = d %>% 
+  select(workerid,subject_information.accuracy,subject_information.age,subject_information.camblock,subject_information.comments, subject_information.eyesight, subject_information.eyesight_task, subject_information.gender, subject_information.headphones, language, subject_information.previous_accuracy_attempts, subject_information.time_in_minutes) %>% 
+  unique()
+
+# number of unique participants:
+nrow(participants) 
+
+# distribution of participant gender
+table(participants$subject_information.gender)
+
+# distribution of completion times
+summary(participants$subject_information.time_in_minutes)
+ggplot(participants, aes(x=subject_information.time_in_minutes)) +
+  geom_histogram()
+
+# distribution of calibration accuracy
+summary(participants$subject_information.accuracy)
+ggplot(participants, aes(x=subject_information.accuracy)) +
+  geom_histogram()
+
+# distribution of ages
+summary(participants$subject_information.age)
+ggplot(participants, aes(x=subject_information.age)) +
+  geom_histogram()
+
+# eyesight information
+ggplot(participants, aes(x=subject_information.eyesight,fill=subject_information.eyesight_task)) +
+  geom_histogram(stat="count")
+
+# distribution of camera views -- some people continued to see camera view even during experiment (bug we haven't figured out yet how to fix)
+ggplot(participants, aes(x=subject_information.camblock,fill=subject_information.camblock)) +
+  geom_histogram(stat="count")
+
+# distribution of headphone use
+ggplot(participants, aes(x=subject_information.headphones)) +
+  geom_histogram(stat="count")
+
+# distribution of native languages
+ggplot(participants, aes(x=language)) +
+  geom_histogram(stat="count") +
+  theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1))
+```
+
+Separate time and x/y coordinates into separate data points, one per row, and define regions of interest (ROIs).
+```{r,message=F,warning=F}
+# set width and height of ROIs
+imgwidth = 85 + 75 # boy/girl + objects
+imgheight = 160 + 90 # boy/girl + objects
+
+#TODO: ask judith
+imgpadding = 0 
+centerpadding = 0 
+scene_width = 1280 # everything takes place in a central 'scene' of  1280 pixels 
+scene_height = 650 
+
+dd = d %>%
+  #select(workerid,webgazer_time,x,y,system.windowW,system.windowH) %>%
+  separate_rows(webgazer_time,x,y,convert=TRUE, sep=",") %>% 
+  mutate(x_center = (system.windowW/2), y_center = (system.windowH/2),
+           AOI_topleft_x_min = x_center - (scene_width/2),
+           AOI_topleft_x_max = x_center - (scene_width/2) + imgwidth + imgpadding,
+           AOI_topleft_y_min = y_center - (scene_height/2) - imgheight - imgpadding,
+           AOI_topleft_y_max = y_center - (scene_height/2) ,
+         
+           AOI_bottomleft_x_min = x_center - (scene_width/2),
+           AOI_bottomleft_x_max = x_center - (scene_width/2) + imgwidth + imgpadding,
+           AOI_bottomleft_y_min = y_center + (scene_height/2),
+           AOI_bottomleft_y_max = y_center + (scene_height/2) + imgheight + imgpadding,
+         
+           AOI_topright_x_min = x_center + (scene_width/2),
+           AOI_topright_x_max = x_center + (scene_width/2) + imgwidth + imgpadding,
+           AOI_topright_y_min = y_center - (scene_height/2) - imgheight - imgpadding,
+           AOI_topright_y_max = y_center - (scene_height/2),
+         
+           AOI_bottomright_x_min = x_center + (scene_width/2),
+           AOI_bottomright_x_max = x_center + (scene_width/2) + imgwidth + imgpadding,
+           AOI_bottomright_y_min = y_center + (scene_height/2),
+           AOI_bottomright_y_max = y_center + (scene_height/2) + imgheight + imgpadding) %>%
+  
+  mutate(look = case_when(x<AOI_topleft_x_max & x>AOI_topleft_x_min & y<AOI_topleft_y_max & y>AOI_topleft_y_min ~ "topleft",
+                          x<AOI_bottomleft_x_max & x>AOI_bottomleft_x_min & y<AOI_bottomleft_y_max & y > AOI_bottomleft_y_min ~ "bottomleft",
+                          x<AOI_topright_x_max & x>AOI_topright_x_min & y<AOI_topright_y_max & y>AOI_topright_y_min ~ "topright",
+                          x<AOI_bottomright_x_max & x>AOI_bottomright_x_min & y<AOI_bottomright_y_max & y>AOI_bottomright_y_min ~ "bottomright",
+                         TRUE ~ "other")) %>%
+  mutate(ROI = case_when(look==target_location ~ "target",
+                         look==competitor_location ~ "target",
+                         TRUE ~ "other")) %>%
+  mutate(target_look = ifelse(ROI == "target", 1, 0), competitor_look = ifelse(ROI == "competitor", 1, 0), other_look = ifelse(ROI == "other", 1, 0)) %>% 
+  select(workerid,displayID, look,target_location,competitor_location,x,y)
+
+# sanity check that ROIs are getting correctly assigned
+ggplot(dd, aes(x=x,y=y)) +
+  geom_point() +
+  facet_wrap(~workerid, scales="free")
+```

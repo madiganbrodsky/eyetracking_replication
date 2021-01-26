@@ -1,0 +1,407 @@
+---
+title: "Rhyme and cohort competitors in word recognition -- a replication of Allopenna et al (1998)"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+This study is a replication of Allopenna et al (1998) using a 2AFC (instead of a 4AFC) paradigm. Thanks to Liz Simmons and Jim Magnuson for providing the visual and auditory stimuli. 
+
+The main research question is: In a web-based eye-tracking paradigm using webgazer.js, can we replicate standard onset competitor and rhyme competitor effects?
+
+Answer: The analysis below suggests that onset competitor effects replicate very clearly and rhyme competitor effects do so less clearly. The relatively weaker rhyme competitor effects may be due to the relatively noisier web-based eye-tracking data -- rhyme competitor effects are generally weaker than onset competitor effects and consequently more difficult to detect.
+
+[Here](https://willclapp.github.io/145_cohort_rhyme/eyetracking_template-master/eyetrack_HRT.html)'s the experiment we're analyzing.
+
+**Participants:** 57 students from Judith Degen's LING 145 "Introduction to Psycholinguistics" class, Autumn 2020, and their friends
+
+
+**Materials:** 
+
+1.  There were 3 conditions, with 9 items in each:
+  * Cohort: target word shared onset with competitor word (eg, "bubbles" and "bunny").
+  * Rhyme: target word rhymed with competitor word (eg, "pocket" and "rocket")
+  * Unrelated: control condition where target word had no overlap with competitor word (eg, "doctor" and "muffin")
+2.  The stimuli were split into 4 lists, with 27 items each (target position was counterbalanced within and across lists; each word was the target on one list and the competitor on the other).
+
+
+**Procedure:**
+
+1. Subjects listened to instructions like "Find the bubbles" in a web-based 2AFC visual world paradigm.
+2. Subjects clicked on the target object after each instruction to advance to the next trial.
+
+
+**Results:**
+
+Preprocessing
+
+* Trials with wrong selections were removed. **4 cases**
+
+Analysis
+
+* computed regions of interest: target, competitor, center, other
+* aligned time relative to target word onset and binned samples into **60**ms bins
+* plotted proportions of looks over time (all regions vs just target and competitor)
+* **additional analyses?**
+
+```{r, message=F, warning=F}
+library(tidyverse)
+library(lme4)
+library(ggplot2)
+
+# set directory
+# this.dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+# setwd(this.dir)
+
+# load helper scripts
+source("helpers.R")
+
+# load target word onsets
+audio_info = read.csv('../data/onsets.csv') %>% 
+  separate(audio,c("target_item",NA))
+names(audio_info) = c("target_item","audio_target_onset","audio_target_duration","audio_end")
+
+# set color-blind-friendly color palette
+cbPalette <- c("#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73")
+
+# load data
+d = read.csv('../data/main2-cohort-merged.csv') %>% 
+  select(-proliferate.condition,-audio_loaded_time,-criticality,-error) %>% 
+  mutate(trial = tolower(trial),selected_img = tolower(selected_img), img_left = tolower(img_left), img_right = tolower(img_right)) %>% 
+  separate(trial,c("target_item","target_type")) %>% 
+  mutate(target_item=fct_recode(target_item, cookie = "cookies")) %>% 
+  separate(selected_img,c(NA,NA,"selected_item","selected_type",NA)) %>% 
+  separate(img_right,c(NA,NA,"right_item",NA,NA)) %>% 
+  separate(img_left,c(NA,NA,"left_item",NA,NA)) %>% 
+  mutate(target_location = case_when(left_item == target_item ~ "left",
+                                     right_item == target_item ~ "right",
+                                     TRUE ~ "no target/error")) %>% 
+  left_join(audio_info,by=c("target_item"))
+
+```
+
+
+Compute accuracy and exclude trials with wrong selections. Also exclude JD test runs.
+```{r,message=F,warning=F}
+d = d %>% 
+  mutate(selection_correct = selected_item == target_item, language = tolower(subject_information.language))
+table(d$selection_correct)
+
+d = d %>% 
+  filter(selection_correct) %>% 
+  filter(!subject_information.comments %in% c("asd fsdf","test"))
+
+participants = d %>% 
+  select(workerid,subject_information.accuracy,subject_information.age,subject_information.camblock,subject_information.comments, subject_information.eyesight, subject_information.eyesight_task, subject_information.gender, subject_information.headphones, language, subject_information.previous_accuracy_attempts, subject_information.time_in_minutes) %>% 
+  unique() 
+
+# number of unique participants:
+nrow(participants) 
+
+# distribution of participant gender
+table(participants$subject_information.gender)
+
+# distribution of completion times
+summary(participants$subject_information.time_in_minutes)
+ggplot(participants, aes(x=subject_information.time_in_minutes)) +
+  geom_histogram()
+
+# distribution of calibration accuracy
+summary(participants$subject_information.accuracy)
+ggplot(participants, aes(x=subject_information.accuracy)) +
+  geom_histogram()
+
+# distribution of ages
+summary(participants$subject_information.age)
+ggplot(participants, aes(x=subject_information.age)) +
+  geom_histogram()
+
+# eyesight information
+ggplot(participants, aes(x=subject_information.eyesight,fill=subject_information.eyesight_task)) +
+  geom_histogram(stat="count")
+
+# distribution of camera views -- some people continued to see camera view even during experiment (bug we haven't figured out yet how to fix)
+ggplot(participants, aes(x=subject_information.camblock,fill=subject_information.camblock)) +
+  geom_histogram(stat="count")
+
+# distribution of headphone use
+ggplot(participants, aes(x=subject_information.headphones)) +
+  geom_histogram(stat="count")
+
+# distribution of native languages
+ggplot(participants, aes(x=language)) +
+  geom_histogram(stat="count") +
+  theme(axis.text.x=element_text(angle=45, hjust=1,vjust=1))
+
+
+```
+
+Separate time and x/y coordinates into separate data points, one per row, and define regions of interest (ROIs).
+```{r,message=F,warning=F}
+# set width and height of ROIs
+imgwidth = 473
+imgheight = 467
+# next_width = 50
+# next_height = 29
+
+imgpadding = 50 
+centerpadding = 100
+scene_width = 1280 # everything takes place in a central 'scene' of  1280 pixels 
+frameheight = 650
+
+dd = d %>%  
+  separate_rows(time,x,y,convert=TRUE) %>% 
+  mutate(x_center = (system.windowW/2),
+           y_center = (system.windowH/2),
+           AOI_left_x_min = x_center - (scene_width/2),
+           AOI_left_x_max = x_center - (scene_width/2) +imgwidth + imgpadding,
+           AOI_right_x_min = x_center + (scene_width/2) - imgwidth - imgpadding,
+           AOI_right_x_max = x_center + (scene_width/2),
+           AOI_y_min = y_center-(imgheight/2 + imgpadding), 
+           AOI_y_max = y_center+(imgheight/2 + imgpadding)) %>% 
+           # next_x_min = x_center - (next_width/2) - nextpadding, 
+           # next_x_max = x_center + (next_width/2) + nextpadding,
+           # next_y_min =  y_center - (next_height/2) - nextpadding, 
+           # next_y_max =  y_center + (next_height/2) + nextpadding
+  mutate(look = case_when(x < AOI_left_x_max & x > AOI_left_x_min & y < AOI_y_max & y > AOI_y_min ~ "left",
+                          x < AOI_right_x_max & x > AOI_right_x_min & y < AOI_y_max & y > AOI_y_min ~ "right",
+                         x < x_center + centerpadding & x > x_center - centerpadding & y > y_center - centerpadding & y < y_center + centerpadding ~ "center",
+                         TRUE ~ "other")) %>% 
+  mutate(ROI = case_when(look == target_location ~ "target",
+                         look %in% c("left","right") ~ "competitor",
+                         look == "center" ~ "center",
+                         TRUE ~ "other")) %>% 
+  mutate(target_look = ifelse(ROI == "target", 1, 0), competitor_look = ifelse(ROI == "competitor", 1, 0), center_look = ifelse(ROI == "center", 1, 0), other_look = ifelse(ROI == "other", 1, 0)) %>% 
+  drop_na()
+
+# sanity check that ROIs are getting correctly assigned
+ggplot(dd, aes(x=x,y=y,color=look)) +
+  geom_point() +
+  facet_wrap(~workerid)
+```
+
+Bin samples and align time to the onset of the target word.
+```{r,message=F,warning=F}
+first_samples = dd %>% 
+  group_by(workerid,trial_no) %>% 
+  summarize(first_sample = min(time))
+
+# total number of samples:
+nrow(first_samples)
+# head(first_samples)
+
+# set size of time bins to collapse over
+binsize = 60
+
+# bin samples and align to target word onset
+dd_binned = dd %>% 
+  left_join(first_samples,by=c("workerid","trial_no")) %>% 
+  mutate(relative_time = time-first_sample) %>% 
+  mutate(time_rel_target_onset = relative_time - 500 - (audio_target_onset*1000)) %>% 
+  filter(time_rel_target_onset > -600 & time_rel_target_onset < 1500) %>% # cut off any samples after maxtime (eg 3 seconds)
+  mutate(time_bin=floor(time_rel_target_onset/binsize)) %>% 
+  mutate(binned_time_rel_target_onset = time_bin*binsize)
+```
+
+Plot proportions of looks to all regions (target, competitor, center, other)
+```{r message=F, warning=F}
+# aggregate looks (compute proportions of looks to each region in each time bin and condition; add 95% bootstrapped confidence intervals)
+agr = dd_binned %>% 
+  group_by(condition,binned_time_rel_target_onset) %>% 
+  summarize(target_prop=mean(target_look),target_CILow=ci.low(target_look),target_CIHigh=ci.high(target_look),competitor_prop=mean(competitor_look),competitor_CILow=ci.low(competitor_look),competitor_CIHigh=ci.high(competitor_look),center_prop=mean(center_look),center_CILow=ci.low(center_look),center_CIHigh=ci.high(center_look),other_prop=mean(other_look),other_CILow=ci.low(other_look),other_CIHigh=ci.high(other_look)) %>% 
+  ungroup() %>% 
+  mutate(target_ymin=target_prop-target_CILow,target_ymax=target_prop+target_CIHigh,competitor_ymin=competitor_prop-competitor_CILow,competitor_ymax=competitor_prop+competitor_CIHigh,center_ymin=center_prop-center_CILow,center_ymax=center_prop+center_CIHigh,other_ymin=other_prop-other_CILow,other_ymax=other_prop+other_CIHigh)
+
+# prepare data for plotting
+long_props = agr %>% 
+  select(condition,binned_time_rel_target_onset,target_prop,competitor_prop,center_prop,other_prop) %>% 
+  pivot_longer(cols = target_prop:other_prop,names_to=c("region"),values_to=c("proportion")) %>% 
+  separate(region,c("region",NA))
+
+long_ymin = agr %>% 
+  select(condition,binned_time_rel_target_onset,target_ymin,competitor_ymin,center_ymin,other_ymin) %>% 
+  pivot_longer(cols = target_ymin:other_ymin,names_to=c("region"),values_to=c("ymin")) %>% 
+  separate(region,c("region",NA))
+
+long_ymax = agr %>% 
+  select(condition,binned_time_rel_target_onset,target_ymax,competitor_ymax,center_ymax,other_ymax) %>% 
+  pivot_longer(cols = target_ymax:other_ymax,names_to=c("region"),values_to=c("ymax")) %>% 
+  separate(region,c("region",NA))
+
+toplot = long_props %>% 
+  left_join(long_ymin,by=c("condition","binned_time_rel_target_onset","region")) %>% 
+  left_join(long_ymax,by=c("condition","binned_time_rel_target_onset","region")) %>% 
+  mutate(region = fct_relevel(region,"target","competitor","center"))
+
+# compute mean end of instruction
+durations = d %>% 
+  summarize(mean_audio_offset=mean(audio_target_duration)*1000)
+
+annotations = data.frame(Label=c("target\nword\nonset","mean\naudio\noffset"),binned_time_rel_target_onset=c(0,durations$mean_audio_offset),proportion=.75)
+```
+
+```{r fig1,  fig.height=8, fig.width=6}
+ggplot(toplot, aes(x=binned_time_rel_target_onset,y=proportion)) +
+  geom_line(size=1, aes(color=region)) +
+  geom_ribbon(aes(ymin=ymin,ymax=ymax,fill=region),alpha=.3) +
+  scale_color_manual(values=cbPalette[2:5]) +
+  scale_fill_manual(values=cbPalette[2:5]) +
+  geom_vline(aes(xintercept=200),linetype="dashed",size=1) +
+  geom_vline(data=durations,aes(xintercept=mean_audio_offset+200),linetype="dashed",size=1) +
+  xlab("Time in ms relative to target word onset") +
+  ylab("Proportion of looks") +
+  geom_text(data=annotations,aes(label=Label)) +
+  facet_wrap(~condition,nrow=3)
+```
+
+```{r fig2, fig.height=6, fig.width=8}
+ggplot(toplot, aes(x=binned_time_rel_target_onset,y=proportion)) +
+  geom_line(size=1, aes(color=condition)) +
+  geom_ribbon(aes(ymin=ymin,ymax=ymax,fill=condition),alpha=.3) +
+  scale_color_manual(values=cbPalette[2:5]) +
+  scale_fill_manual(values=cbPalette[2:5]) +
+  geom_vline(aes(xintercept=200),linetype="dashed",size=1) +
+  geom_vline(data=durations,aes(xintercept=mean_audio_offset+200),linetype="dashed",size=1) +
+  xlab("Time in ms relative to target word onset") +
+  ylab("Proportion of looks") +
+  geom_text(data=annotations,aes(label=Label)) +
+  facet_wrap(~region)
+```
+
+Plot proportions of looks to just target and competitor
+```{r, message=F, warning=F}
+agr_tc = dd_binned %>%
+  filter(target_look == 1 | competitor_look == 1) %>%
+  group_by(condition,binned_time_rel_target_onset) %>%
+  summarize(target_prop=mean(target_look),target_CILow=ci.low(target_look),target_CIHigh=ci.high(target_look),competitor_prop=mean(competitor_look),competitor_CILow=ci.low(competitor_look),competitor_CIHigh=ci.high(competitor_look)) %>%
+  ungroup() %>%
+  mutate(target_ymin=target_prop-target_CILow,target_ymax=target_prop+target_CIHigh,competitor_ymin=competitor_prop-competitor_CILow,competitor_ymax=competitor_prop+competitor_CIHigh)
+
+long_props = agr_tc %>%
+  select(condition,binned_time_rel_target_onset,target_prop,competitor_prop) %>%
+  pivot_longer(cols = target_prop:competitor_prop,names_to=c("region"),values_to=c("proportion")) %>%
+  separate(region,c("region",NA))
+
+long_ymin = agr_tc %>%
+  select(condition,binned_time_rel_target_onset,target_ymin,competitor_ymin) %>%
+  pivot_longer(cols = target_ymin:competitor_ymin,names_to=c("region"),values_to=c("ymin")) %>%
+  separate(region,c("region",NA))
+
+long_ymax = agr_tc %>%
+  select(condition,binned_time_rel_target_onset,target_ymax,competitor_ymax) %>%
+  pivot_longer(cols = target_ymax:competitor_ymax,names_to=c("region"),values_to=c("ymax")) %>%
+  separate(region,c("region",NA))
+
+toplot = long_props %>%
+  left_join(long_ymin,by=c("condition","binned_time_rel_target_onset","region")) %>%
+  left_join(long_ymax,by=c("condition","binned_time_rel_target_onset","region"))  %>%
+  mutate(region = fct_relevel(region, "target","competitor","center"))
+
+durations = d %>%
+  summarize(mean_audio_offset=mean(as.numeric(audio_target_duration))*1000)
+
+annotations = data.frame(Label=c("target\nword\nonset","mean\naudio\noffset"),binned_time_rel_target_onset=c(0,durations$mean_audio_offset),proportion=.85)
+```
+
+```{r fig4, fig.height=8, fig.width=6}
+ggplot(toplot, aes(x=binned_time_rel_target_onset,y=proportion)) +
+  geom_line(size=1, aes(color=region)) +
+  geom_ribbon(aes(ymin=ymin,ymax=ymax,fill=region),alpha=.3) +
+  scale_color_manual(values=cbPalette[2:5]) +
+  scale_fill_manual(values=cbPalette[2:5]) +
+  geom_vline(aes(xintercept=200),linetype="dashed",size=1) +
+  geom_vline(data=durations,aes(xintercept=mean_audio_offset+200),linetype="dashed",size=1) +
+  xlab("Time in ms relative to target word onset") +
+  ylab("Proportion of looks") +
+  geom_text(data=annotations,aes(label=Label)) +
+  facet_wrap(~condition,nrow=3)
+```
+
+```{r fig5, fig.height=3, fig.width=8}
+ggplot(toplot, aes(x=binned_time_rel_target_onset,y=proportion)) +
+  geom_line(size=1, aes(color=condition)) +
+  geom_ribbon(aes(ymin=ymin,ymax=ymax,fill=condition),alpha=.3) +
+  scale_color_manual(values=cbPalette[2:5]) +
+  scale_fill_manual(values=cbPalette[2:5]) +
+  geom_vline(aes(xintercept=200),linetype="dashed",size=1) +
+  geom_vline(data=durations,aes(xintercept=mean_audio_offset+200),linetype="dashed",size=1) +
+  xlab("Time in ms relative to target word onset") +
+  ylab("Proportion of looks") +
+  geom_text(data=annotations,aes(label=Label)) +
+  facet_wrap(~region)
+
+
+```
+
+Plot proportions of looks to target and competitor as a function of native language background (English vs other).
+```{r, message=F, warning=F}
+agr_tc = dd_binned %>%
+  mutate(native_language = case_when(str_detect(language, "english") ~ "english", # if subject included english in their native languages, treat as native (includes multilingual subjects)
+           # case_when(language == "english" ~ "english", # if subject included ONLY english in their native languages, treat as native
+                                    TRUE ~ "other")) %>%
+  filter(target_look == 1 | competitor_look == 1) %>%
+  group_by(condition,binned_time_rel_target_onset,native_language) %>%
+  summarize(target_prop=mean(target_look),target_CILow=ci.low(target_look),target_CIHigh=ci.high(target_look),competitor_prop=mean(competitor_look),competitor_CILow=ci.low(competitor_look),competitor_CIHigh=ci.high(competitor_look)) %>%
+  ungroup() %>%
+  mutate(target_ymin=target_prop-target_CILow,target_ymax=target_prop+target_CIHigh,competitor_ymin=competitor_prop-competitor_CILow,competitor_ymax=competitor_prop+competitor_CIHigh)
+
+long_props = agr_tc %>%
+  select(condition,native_language,binned_time_rel_target_onset,target_prop,competitor_prop) %>%
+  pivot_longer(cols = target_prop:competitor_prop,names_to=c("region"),values_to=c("proportion")) %>%
+  separate(region,c("region",NA))
+
+long_ymin = agr_tc %>%
+  select(condition,native_language,binned_time_rel_target_onset,target_ymin,competitor_ymin) %>%
+  pivot_longer(cols = target_ymin:competitor_ymin,names_to=c("region"),values_to=c("ymin")) %>%
+  separate(region,c("region",NA))
+
+long_ymax = agr_tc %>%
+  select(condition,native_language,binned_time_rel_target_onset,target_ymax,competitor_ymax) %>%
+  pivot_longer(cols = target_ymax:competitor_ymax,names_to=c("region"),values_to=c("ymax")) %>%
+  separate(region,c("region",NA))
+
+toplot = long_props %>%
+  left_join(long_ymin,by=c("condition","native_language","binned_time_rel_target_onset","region")) %>%
+  left_join(long_ymax,by=c("condition","native_language","binned_time_rel_target_onset","region"))
+
+durations = d %>%
+  # group_by(condition) %>%
+  summarize(mean_audio_offset=mean(as.numeric(audio_target_duration))*1000)
+
+annotations = data.frame(Label=c("target\nword\nonset","mean\naudio\noffset"),binned_time_rel_target_onset=c(0,durations$mean_audio_offset),proportion=.85)
+```
+
+```{r fig6, fig.height=5, fig.width=9}
+ggplot(toplot, aes(x=binned_time_rel_target_onset,y=proportion)) +
+  # geom_point() +
+  geom_line(size=1, aes(color=region)) +
+  geom_ribbon(aes(ymin=ymin,ymax=ymax,fill=region),alpha=.3) +
+  scale_color_manual(values=cbPalette[2:5]) +
+  scale_fill_manual(values=cbPalette[2:5]) +
+  geom_vline(aes(xintercept=200),linetype="dashed",size=1) +
+  geom_vline(data=durations,aes(xintercept=mean_audio_offset+200),linetype="dashed",size=1) +
+  xlab("Time in ms relative to target word onset") +
+  ylab("Proportion of looks") +
+  geom_text(data=annotations,aes(label=Label)) +
+  facet_grid(native_language~condition)
+```
+
+```{r fig7, fig.height=6, fig.width=8}
+ggplot(toplot, aes(x=binned_time_rel_target_onset,y=proportion)) +
+  # geom_point() +
+  geom_line(size=1, aes(color=condition)) +
+  geom_ribbon(aes(ymin=ymin,ymax=ymax,fill=condition),alpha=.3) +
+  scale_color_manual(values=cbPalette[2:5]) +
+  scale_fill_manual(values=cbPalette[2:5]) +
+  geom_vline(aes(xintercept=200),linetype="dashed",size=1) +
+  geom_vline(data=durations,aes(xintercept=mean_audio_offset+200),linetype="dashed",size=1) +
+  xlab("Time in ms relative to target word onset") +
+  ylab("Proportion of looks") +
+  geom_text(data=annotations,aes(label=Label)) +
+  facet_grid(native_language~region)
+
+
+```
+

@@ -88,7 +88,7 @@ function make_slides(f) {
       this.stim = stim;
       $(".second_slide").hide();
       $(".grid_button").hide();
-      $(".grid-container").hide();
+      $(".imgwrapper").hide();
 
       exp.objects = ["", "apples, pears, bananas and oranges.",
         "apples, pears, bananas and oranges.",
@@ -132,31 +132,22 @@ function make_slides(f) {
       $(".sentence").hide();
       $(".grid_button").hide();
 
-      exp.selection; //TODO - fix
-      exp.rt = 0; //TODO - del
+      exp.selection;
+      exp.rt = 0;
       exp.trial_start = Date.now();
 
-    
       // display images
-      var loc1_img = '<img src="images/' + this.stim.location1 + '.png"style="height:90px" class="left">';
-      $(".loc1").html(loc1_img);
-      var loc2_img = '<img src="images/' + this.stim.location2 + '.png" style="height:90px" class="center">';
-      $(".loc2").html(loc2_img);
-      var loc3_img = '<img src="images/' + this.stim.location3 + '.png" style="height:90px" class="center">';
-      $(".loc3").html(loc3_img);
-      var loc4_img = '<img src="images/' + this.stim.location4 + '.png" style="height:90px" class="center">';
-      $(".loc4").html(loc4_img);
-      var loc5_img = '<img src="images/' + this.stim.location5 + '.png" style="height:70px" class="right">';
-      $(".loc5").html(loc5_img);
-      var loc6_img = '<img src="images/' + this.stim.location6 + '.png" style="height:70px" class="left">';
-      $(".loc6").html(loc6_img);
-      var boy = '<img src="images/boy.png" style="height:160px" align="buttom">';
-      var girl = '<img src="images/girl.png" style="height:160px" align="buttom">';
-      $(".loc7").html(boy);
-      $(".loc8").html(boy);
-      $(".loc9").html(girl);
-      $(".loc10").html(girl);
-      $(".grid-container").show();
+      $(".loc1").attr('src', "images/" + this.stim.location1 + '.png');
+      $(".loc2").attr('src', "images/" + this.stim.location2 + '.png');
+      $(".loc3").attr('src', "images/" + this.stim.location3 + '.png');
+      $(".loc4").attr('src', "images/" + this.stim.location4 + '.png');
+      $(".loc5").attr('src', "images/" + this.stim.location5 + '.png');
+      $(".loc6").attr('src', "images/" + this.stim.location6 + '.png');
+      $(".loc7").attr('src', "images/boy.png");
+      $(".loc8").attr('src', "images/boy.png");
+      $(".loc9").attr('src', "images/girl.png");
+      $(".loc10").attr('src', "images/girl.png");
+      $(".imgwrapper").show();
 
       exp.prime = this.stim.prime
       setTimeout(function () {
@@ -167,36 +158,26 @@ function make_slides(f) {
         console.log("Play audio")
         exp.audio_play_unix = Date.now();
         exp.playing = true;
-
         // when audio ends
         aud.addEventListener('ended', function () {
           exp.playing = false;
         }, false);
-
+        // make images clickable
+        $('img').bind("click", function (e) {
+          e.preventDefault();
+            if (exp.playing == false) {
+              exp.selection = $(this).attr("id")
+              exp.rt = (Date.now() - exp.trial_start);
+              $('img').unbind('click')
+              _s.button();
+            }
+        });
       }, 1000);
-
-      // make images clickable
-      $(".loc").bind("click", function (e) {
-        $(".err").hide();
-        e.preventDefault();
-        var loc = $(this).data().loc
-        if (["AOI5", "AOI6"].includes(loc)) {
-          $(".err").show();
-          console.log("should show error");
-        } else {
-          if (exp.playing == false) {
-            exp.selection = loc;
-            exp.rt = (Date.now() - exp.trial_start);
-            $(".loc").unbind('click')
-            _s.button();
-          }
-        }
-      });
     },
 
     button: function () {
-      console.log("Selection: ", exp.selection)
-      console.log("Timer: ", exp.rt)
+      // console.log("Selection: ", exp.selection)
+      // console.log("Timer: ", exp.rt)
       this.log_responses();
       _stream.apply(this);
     },
@@ -260,30 +241,19 @@ function make_slides(f) {
       console.log("Trial start: ", exp.trial_start)
 
       $(".err").hide();
-      $(".grid-container").show();
-
+      
       this.stim = stim; // store this information in the slide so you can record it later
-      // var instruction = stim.instruction3;
-      // $(".instruction").html(instruction);
-
-      var loc1_img = '<img src="images/' + stim.location1 + '.png"style="height:90px" class="left">';
-      $(".loc1").html(loc1_img);
-      var loc2_img = '<img src="images/' + stim.location2 + '.png" style="height:90px" class="center">';
-      $(".loc2").html(loc2_img);
-      var loc3_img = '<img src="images/' + stim.location3 + '.png" style="height:90px" class="center">';
-      $(".loc3").html(loc3_img);
-      var loc4_img = '<img src="images/' + stim.location4 + '.png" style="height:90px" class="center">';
-      $(".loc4").html(loc4_img);
-      var loc5_img = '<img src="images/' + stim.location5 + '.png" style="height:70px" class="right">';
-      $(".loc5").html(loc5_img);
-      var loc6_img = '<img src="images/' + stim.location6 + '.png" style="height:70px" class="left">';
-      $(".loc6").html(loc6_img);
-      var boy = '<img src="images/boy.png" style="height:160px" align="buttom">';
-      var girl = '<img src="images/girl.png" style="height:160px" align="buttom">';
-      $(".loc7").html(boy);
-      $(".loc8").html(boy);
-      $(".loc9").html(girl);
-      $(".loc10").html(girl);
+      $(".loc1").attr('src', "images/" + stim.location1 + '.png');
+      $(".loc2").attr('src', "images/" + stim.location2 + '.png');
+      $(".loc3").attr('src', "images/" + stim.location3 + '.png');
+      $(".loc4").attr('src', "images/" + stim.location4 + '.png');
+      $(".loc5").attr('src', "images/" + stim.location5 + '.png');
+      $(".loc6").attr('src', "images/" + stim.location6 + '.png');
+      $(".loc7").attr('src', "images/boy.png");
+      $(".loc8").attr('src', "images/boy.png");
+      $(".loc9").attr('src', "images/girl.png");
+      $(".loc10").attr('src', "images/girl.png");
+      $(".imgwrapper").show();
 
       if (!exp.DUMMY_MODE) {
         hideVideoElements();
@@ -296,7 +266,6 @@ function make_slides(f) {
           var xprediction = data.x;
           var yprediction = data.y;
           var unixtime = Date.now(); // unix timestamp - so you have absolute timestamps
-
           exp.tlist.push(elapsedTime); // this is the elapsed time since webgazer initialized
           exp.unixtlist.push(unixtime);
           exp.xlist.push(xprediction);
@@ -305,9 +274,9 @@ function make_slides(f) {
       }
 
       console.log("Wait 1sec")
-
       exp.prime = this.stim.Prime
 
+      // 1 sec preview before audio
       setTimeout(function () {
         aud = document.getElementById("stim");
         aud.src = "audio/" + exp.prime + ".wav";
@@ -316,30 +285,29 @@ function make_slides(f) {
         console.log("Play audio")
         exp.audio_play_unix = Date.now();
         exp.playing = true;
-
         // when audio ends
         aud.addEventListener('ended', function () {
           exp.playing = false;
         }, false);
+        // make images clickable
+        $('img').bind("click", function (e) {
+          e.preventDefault();
+            if (exp.playing == false) {
+              exp.selection = $(this).attr("id")
+              console.log("selection", exp.selection)
+              exp.rt = (Date.now() - exp.trial_start);
+              $('img').unbind('click')
+              _s.button();
+            }
+        });
 
       }, 1000);
-
-
-      // make images clickable
-      $(".loc").bind("click", function (e) {
-        e.preventDefault();
-        if (exp.playing == false) {
-          exp.selection = $(this).data().loc
-          exp.unix_rt = Date.now();
-          $(".loc").unbind('click')
-          _s.button();
-        }
-      });
     },
 
     button: function () {
       webgazer.pause();
       exp.rt = exp.unix_rt - exp.trial_start;
+      console.log("Trial start: ", exp.trial_start)
       console.log("Selection: ", exp.selection);
       console.log("RT: ", exp.rt);
       console.log("Unix RT: ", exp.unix_rt);
@@ -349,10 +317,10 @@ function make_slides(f) {
       exp.unixtlist = [];
       exp.xlist = [];
       exp.ylist = [];
-      
+
       // fixation cross
       exp.this = this
-      $(".grid-container").hide();
+      $(".imgwrapper").hide();
       $(".cross_center").show();
       setTimeout(function () {
         _stream.apply(exp.this);
@@ -367,7 +335,7 @@ function make_slides(f) {
         "figure": this.stim.figure,
         "display_type": this.stim.display_type,
         "audio": this.stim.Prime,
-        "list": this.list,
+        "list": this.stim.list,
         "location1": this.stim.location1,
         "location2": this.stim.location2,
         "location3": this.stim.location3,
@@ -423,7 +391,7 @@ function make_slides(f) {
           headphones: headphones,
           eyesight: eyesight,
           eyesight_task: eyesight_task,
-          //           pay_fair : payfair,
+          pay_fair: payfair,
           camblock: camblock,
           //           whatstudy : $("#what_study").val(),
           comments: $("#comments").val(),
@@ -461,15 +429,13 @@ function init() {
 
   function preload() {
     for (pos in exp.stims) {
-      // console.log("audio/" + exp.stims[pos].Prime + ".wav")
       new Audio().src = "audio/" + exp.stims[pos].Prime + ".wav";
     };
     console.log("loaded all the audio");
-    for (pos in exp.stims){
+    for (pos in exp.stims) {
       for (var i = 1; i <= 10; i++) {
         var locnum = "location" + i;
-        // console.log("images/" + exp.stims[pos][locnum] +  ".png")
-        new Image().src = "images/" + exp.stims[pos][locnum] +  ".png";
+        new Image().src = "images/" + exp.stims[pos][locnum] + ".png";
       };
     };
     console.log("loaded all the images");
@@ -480,8 +446,8 @@ function init() {
   exp.DUMMY_MODE = false; // set to true if want to test without eyetracking
   exp.N_TRIALS = 54
   PRECISION_CUTOFF = 50;
-  IMG_HEIGHT = 473   // size of imgs - just for your records -- TODO: change
-  IMG_WIDTH = 467
+  IMG_HEIGHT = 110   // size of imgs - just for your records -- TODO: change
+  IMG_WIDTH = 110
 
   exp.system = {
     Browser: BrowserDetect.browser,
@@ -496,7 +462,7 @@ function init() {
 
   // min size the browser needs to be for current setup
   exp.minWindowWidth = 1280
-  exp.minWindowHeight = 650
+  exp.minWindowHeight = 750
 
   //Initializing data frames
   exp.tlist = [];
