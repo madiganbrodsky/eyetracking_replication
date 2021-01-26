@@ -9,28 +9,16 @@ output:
 
 This study is a replication of Sun & Breheny (2019) with the web-based eye-tracking paradigm using the javascript webgazer library.
 
-The main research question is: TODO
-
-Answer: TODO
-
 [Here](https://madiganbrodsky.github.io/eyetracking_replication/experiments/SunBreheny_webgazer/pilot/list1)'s the experiment we're analyzing.
-
-**Participants:** TODO participants were recruited through Prolific.
-
-**Materials:**TODO
-
-**Procedure:**
 
 1. Subjects listened to instructions like "Click on the boy with some of Susan's apples" in a web-based 4AFC visual world paradigm.
 2. Subjects clicked on the target object after each instruction to advance to the next trial.
 
-**Results:**
-
 Preprocessing
 
-* Trials with wrong selections were removed. **TODO**
+* Trials with wrong selections were removed.
 
-Analysis **TODO**
+Analysis
 
 * computed regions of interest: target, competitor, center, other
 * aligned time relative to target word onset and binned samples into **60**ms bins
@@ -41,15 +29,13 @@ Analysis **TODO**
 library(tidyverse)
 library(lme4)
 library(ggplot2)
-
-# set directory
-# this.dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-# setwd(this.dir)
+library("readxl")
 
 # load helper scripts
 source("helpers.R")
 
 # load target word onsets
+audio_info = read_excel("../data/audiotimes.xlsx")
 
 # set color-blind-friendly color palette
 cbPalette <- c("#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73")

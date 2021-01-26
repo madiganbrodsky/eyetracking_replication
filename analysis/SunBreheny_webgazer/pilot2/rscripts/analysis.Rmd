@@ -9,47 +9,30 @@ output:
 
 This study is a replication of Sun & Breheny (2019) with the web-based eye-tracking paradigm using the javascript webgazer library.
 
-The main research question is: TODO
-
-Answer: TODO
-
 [Here](https://madiganbrodsky.github.io/eyetracking_replication/experiments/SunBreheny_webgazer/pilot/list1)'s the experiment we're analyzing.
-
-**Participants:** TODO participants were recruited through Prolific.
-
-**Materials:**TODO
-
-**Procedure:**
 
 1. Subjects listened to instructions like "Click on the boy with some of Susan's apples" in a web-based 4AFC visual world paradigm.
 2. Subjects clicked on the target object after each instruction to advance to the next trial.
 
-**Results:**
-
 Preprocessing
 
-* Trials with wrong selections were removed. **TODO**
+* Trials with wrong selections were removed.
 
-Analysis **TODO**
+Analysis
 
-* computed regions of interest: target, competitor, center, other
-* aligned time relative to target word onset and binned samples into **60**ms bins
-* plotted proportions of looks over time (all regions vs just target and competitor)
-* **additional analyses?**
+* TODO
 
 ```{r, message=F, warning=F}
 library(tidyverse)
 library(lme4)
 library(ggplot2)
-
-# set directory
-# this.dir <- dirname(rstudioapi::getSourceEditorContext()$path)
-# setwd(this.dir)
+library("readxl")
 
 # load helper scripts
 source("helpers.R")
 
 # load target word onsets
+audio_info = read_excel("../data/audiotimes.xlsx")
 
 # set color-blind-friendly color palette
 cbPalette <- c("#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73","#56B4E9", "#D55E00", "#009E73","#999999", "#E69F00","#009E73")
@@ -127,52 +110,61 @@ ggplot(participants, aes(x=language)) +
 Separate time and x/y coordinates into separate data points, one per row, and define regions of interest (ROIs).
 ```{r,message=F,warning=F}
 # set width and height of ROIs
-imgwidth = 85 + 75 # boy/girl + objects
-imgheight = 160 + 90 # boy/girl + objects
+imgwidth = 107 + 110 # boy/girl + objects
+imgheight = 200 # boy/girl (taller than objects)
+
+center_imgwidth = 220 # objects
+center_imgheight = 110 # objects
 
 #TODO: ask judith
-imgpadding = 0 
-centerpadding = 0 
-scene_width = 1280 # everything takes place in a central 'scene' of  1280 pixels 
-scene_height = 650 
+scene_width = 1280 # everything takes place in a central 'scene' of  1280 x 750 pixels 
+scene_height = 750 
 
 dd = d %>%
   #select(workerid,webgazer_time,x,y,system.windowW,system.windowH) %>%
   separate_rows(webgazer_time,x,y,convert=TRUE, sep=",") %>% 
   mutate(x_center = (system.windowW/2), y_center = (system.windowH/2),
            AOI_topleft_x_min = x_center - (scene_width/2),
-           AOI_topleft_x_max = x_center - (scene_width/2) + imgwidth + imgpadding,
-           AOI_topleft_y_min = y_center - (scene_height/2) - imgheight - imgpadding,
-           AOI_topleft_y_max = y_center - (scene_height/2) ,
+           AOI_topleft_x_max = x_center - (scene_width/2) + imgwidth,
+           AOI_topleft_y_min = y_center + (scene_height/2) - imgheight,
+           AOI_topleft_y_max = y_center + (scene_height/2),
          
            AOI_bottomleft_x_min = x_center - (scene_width/2),
-           AOI_bottomleft_x_max = x_center - (scene_width/2) + imgwidth + imgpadding,
-           AOI_bottomleft_y_min = y_center + (scene_height/2),
-           AOI_bottomleft_y_max = y_center + (scene_height/2) + imgheight + imgpadding,
+           AOI_bottomleft_x_max = x_center - (scene_width/2) + imgwidth,
+           AOI_bottomleft_y_min = y_center - (scene_height/2),
+           AOI_bottomleft_y_max = y_center - (scene_height/2) + imgheight,
          
-           AOI_topright_x_min = x_center + (scene_width/2),
-           AOI_topright_x_max = x_center + (scene_width/2) + imgwidth + imgpadding,
-           AOI_topright_y_min = y_center - (scene_height/2) - imgheight - imgpadding,
-           AOI_topright_y_max = y_center - (scene_height/2),
+           AOI_topright_x_min = x_center + (scene_width/2) - imgwidth,
+           AOI_topright_x_max = x_center + (scene_width/2),
+           AOI_topright_y_min = y_center + (scene_height/2) - imgheight,
+           AOI_topright_y_max = y_center + (scene_height/2),
          
-           AOI_bottomright_x_min = x_center + (scene_width/2),
-           AOI_bottomright_x_max = x_center + (scene_width/2) + imgwidth + imgpadding,
-           AOI_bottomright_y_min = y_center + (scene_height/2),
-           AOI_bottomright_y_max = y_center + (scene_height/2) + imgheight + imgpadding) %>%
+           AOI_bottomright_x_min = x_center + (scene_width/2) - imgwidth,
+           AOI_bottomright_x_max = x_center + (scene_width/2),
+           AOI_bottomright_y_min = y_center - (scene_height/2),
+           AOI_bottomright_y_max = y_center - (scene_height/2) + imgheight,
+         
+           AOI_center_x_min = x_center - (center_imgwidth/2),
+           AOI_center_x_max = x_center + (center_imgwidth/2),
+           AOI_center_y_min = y_center - (center_imgheight/2),
+           AOI_center_y_max = y_center + (center_imgheight/2)) %>%
   
   mutate(look = case_when(x<AOI_topleft_x_max & x>AOI_topleft_x_min & y<AOI_topleft_y_max & y>AOI_topleft_y_min ~ "topleft",
                           x<AOI_bottomleft_x_max & x>AOI_bottomleft_x_min & y<AOI_bottomleft_y_max & y > AOI_bottomleft_y_min ~ "bottomleft",
                           x<AOI_topright_x_max & x>AOI_topright_x_min & y<AOI_topright_y_max & y>AOI_topright_y_min ~ "topright",
                           x<AOI_bottomright_x_max & x>AOI_bottomright_x_min & y<AOI_bottomright_y_max & y>AOI_bottomright_y_min ~ "bottomright",
+                          x<AOI_center_x_max & x>AOI_center_x_min & y<AOI_center_y_max & y>AOI_center_y_min ~ "center",
                          TRUE ~ "other")) %>%
   mutate(ROI = case_when(look==target_location ~ "target",
-                         look==competitor_location ~ "target",
+                         look==competitor_location ~ "competitor",
+                         look=="center" ~ "center",
                          TRUE ~ "other")) %>%
-  mutate(target_look = ifelse(ROI == "target", 1, 0), competitor_look = ifelse(ROI == "competitor", 1, 0), other_look = ifelse(ROI == "other", 1, 0)) %>% 
-  select(workerid,displayID, look,target_location,competitor_location,x,y)
+  mutate(target_look = ifelse(ROI == "target", 1, 0), competitor_look = ifelse(ROI == "competitor", 1, 0), center_look = ifelse(ROI == "center", 1, 0), other_look = ifelse(ROI == "other", 1, 0)) %>% 
+  select(workerid,displayID,look,target_location,competitor_location,x,y) %>%
+  filter(look!="other")
 
 # sanity check that ROIs are getting correctly assigned
-ggplot(dd, aes(x=x,y=y)) +
+ggplot(dd, aes(x=x,y=y,color=look)) +
   geom_point() +
   facet_wrap(~workerid, scales="free")
 ```
